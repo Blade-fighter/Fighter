@@ -10,7 +10,7 @@ public class CardData : ScriptableObject
     public int startupKe;        // 出招所需的刻数
     public int activeKe;         // 命中判定所需的刻数
     public int recoveryKe;       // 收招所需的刻数
-    public int damage;           // 伤害值
-    public CardEffect effect;    // 卡牌附带的效果
+    public CardEffect[] startEffect;    //打出时的效果
+    public CardEffect[] hitEffect;//命中时的效果
     public AttackCollider collider; //创建的碰撞体
 }

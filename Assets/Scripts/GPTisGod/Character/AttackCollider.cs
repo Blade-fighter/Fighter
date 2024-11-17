@@ -17,7 +17,7 @@ public class AttackCollider : MonoBehaviour
         if (collision.gameObject != Creator)
         {
             hit = true;
-            Debug.Log("Collision detected with: " + collision.gameObject.name);
+            Debug.Log("碰撞器检测到 " + collision.gameObject.name);
             // 这里可以实现对目标的伤害或效果逻辑
         }
     }

@@ -19,6 +19,9 @@ MonoBehaviour:
   startupKe: 1
   activeKe: 1
   recoveryKe: 2
-  damage: 3
-  effect: {fileID: 11400000, guid: c40de999e8e8377469e753a74489e678, type: 2}
+  startEffect:
+  - {fileID: 11400000, guid: beb0ebe14345dc04aab729f97bd66000, type: 2}
+  hitEffect:
+  - {fileID: 11400000, guid: cab492b5eeff19e409e5e74240549bcf, type: 2}
+  - {fileID: 11400000, guid: cfde95e77a9d7d348a8ee8940cd4ceeb, type: 2}
   collider: {fileID: 103070142021982681, guid: 371c9b6f8d532cc4d99051eb4993f080, type: 3}

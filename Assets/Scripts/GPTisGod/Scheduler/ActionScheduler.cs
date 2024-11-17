@@ -25,7 +25,10 @@ public class ActionScheduler : MonoBehaviour
         {
             if (actionQueue[i].executionKe <= currentKe)
             {
-                actionQueue[i].Execute();
+                if (!actionQueue[i].isCancelled)
+                {
+                    actionQueue[i].Execute();
+                }
                 actionQueue.RemoveAt(i);
             }
         }

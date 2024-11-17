@@ -7,7 +7,7 @@ public class TimeManager : MonoBehaviour
     public int currentKe; // 当前刻数
     public float keDuration = 0.05f; // 每刻的时间长度
     private float timer;
-    private bool isPaused;
+    public bool isPaused;
 
     private void Awake()
     {

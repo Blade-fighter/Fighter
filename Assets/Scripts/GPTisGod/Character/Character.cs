@@ -1,5 +1,6 @@
 // 示例：角色类
 using UnityEngine;
+using System.Collections;
 
 public class Character : MonoBehaviour
 {
@@ -11,18 +12,45 @@ public class Character : MonoBehaviour
     public Deck deck; // 角色的卡组
     public bool dir; // 角色方向，true 表示向左，false 表示向右
 
+    public float leftBoundary = -19f;  // 场景最左边的x坐标
+    public float rightBoundary = 19f;  // 场景最右边的x坐标
+
+    private ScheduledAction currentAction;
+
+    private void Update()
+    {
+        //防止角色飞出地图
+        if (gameObject.transform.position.x >= rightBoundary)
+        {
+            gameObject.transform.position = new Vector3(rightBoundary, gameObject.transform.position.y, gameObject.transform.position.z);
+        }
+        if (gameObject.transform.position.x <= leftBoundary)
+        {
+            gameObject.transform.position = new Vector3(leftBoundary, gameObject.transform.position.y, gameObject.transform.position.z);
+        }
+    }
     public void SetState(CharacterState newState, int durationKe)
     {
+        // 如果当前有相同的状态，则取消当前的动作，以新持续时间为准
+        if (currentState == newState && currentAction != null)
+        {
+            currentAction.Cancel();
+        }
+
         currentState = newState;
         canAct = false;
-        ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + durationKe, () =>
+
+        // 创建新的调度动作
+        currentAction = new ScheduledAction(TimeManager.Instance.currentKe + durationKe, () =>
         {
             if (currentState == newState)
             {
                 currentState = CharacterState.Idle;
-                canAct = true; // 状态恢复到Idle，允许行动
+                canAct = true;
             }
-        }, this));
+        }, this);
+
+        ActionScheduler.Instance.ScheduleAction(currentAction);
     }
 
     public void TakeDamage(int damage)
@@ -37,22 +65,26 @@ public class Character : MonoBehaviour
         // 处理生命值增加的逻辑
     }
 
-    public void MoveBack(float distance)
+    public void MoveBack(float distance,int durationKe)
     {
         // 处理角色后退的逻辑
-        transform.position += Vector3.left * distance;
-        Debug.Log(cName + " moved back by " + distance + " units.");
+        MoveOverTime(-distance, durationKe);
+        Debug.Log(cName + "后退" + distance + "距离，时间" +durationKe +"刻");
     }
 
-    public bool IsAtEdge()
+    // 检查角色是否在版边
+    public bool IsAtBoundary()
     {
-        // 检查角色是否在场景的边缘
-        float sceneLeftEdge = -10f; // 假设场景左边缘的x坐标为-10
-        float sceneRightEdge = 10f; // 假设场景右边缘的x坐标为10
-        return transform.position.x <= sceneLeftEdge || transform.position.x >= sceneRightEdge;
+        float characterPositionX = transform.position.x;
+
+        if (characterPositionX <= leftBoundary || characterPositionX >= rightBoundary)
+        {
+            return true;
+        }
+        return false;
     }
 
-    public void CreateCollider(AttackCollider colliderPrefab)
+    public GameObject CreateCollider(AttackCollider colliderPrefab)//创建攻击碰撞体
     {
         Vector3 createrLoc = transform.position; // 释放者位置
         Vector3 loc = colliderPrefab.loc; // 碰撞体相对释放者位置
@@ -65,12 +97,14 @@ public class Character : MonoBehaviour
             co.GetComponent<AttackCollider>().Creator = gameObject;
             co.transform.Rotate(0, 180, 0);
             attackCollider = co.GetComponent<Collider2D>();
+            return co;
         }
         else // 朝右
         {
             GameObject co = Instantiate(colliderPrefab.gameObject, loc0, colliderPrefab.transform.rotation);
             co.GetComponent<AttackCollider>().Creator = gameObject;
             attackCollider = co.GetComponent<Collider2D>();
+            return co;
         }
     }
 
@@ -78,10 +112,43 @@ public class Character : MonoBehaviour
     public void ExecuteCard(CardData cardData, Character target)
     {
         // 创建卡牌
-        Card card = new Card(cardData.cardName, cardData.startupKe, cardData.activeKe, cardData.recoveryKe, cardData.damage, cardData.effect, 0, cardData.collider);
+        Card card = new Card(cardData.cardName, cardData.cardType,cardData.cardDescription,cardData.cardImage,cardData.startupKe, cardData.activeKe, cardData.recoveryKe, cardData.startEffect,cardData.hitEffect,cardData.collider);
 
         // 执行卡牌逻辑
         card.Execute(this, target);
+    }
+    // 使用协程来实现平滑移动
+    public void MoveOverTime(float distance, int durationKe)
+    {
+        if (durationKe <= 0) return; // 确保持续时间为正数
+
+        float duration = durationKe * TimeManager.Instance.keDuration; // 总持续时间
+        Vector3 startPosition = transform.position;
+        if (dir)//朝左，反向
+        {
+            Vector3 targetPosition = startPosition - new Vector3(distance, 0, 0);
+            StartCoroutine(SmoothMove(startPosition, targetPosition, duration));
+        }
+        else//朝右，正向
+        {
+            Vector3 targetPosition = startPosition + new Vector3(distance, 0, 0);
+            StartCoroutine(SmoothMove(startPosition, targetPosition, duration));
+        }
+    }
+
+    // 协程，用于在一定时间内平滑移动
+    private IEnumerator SmoothMove(Vector3 startPosition, Vector3 targetPosition, float duration)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null; // 等待下一帧
+        }
+
+        transform.position = targetPosition; // 确保到达最终位置
     }
 }
 
@@ -92,7 +159,9 @@ public enum CharacterState
     AttackingActive,
     Recovery,
     Defending,
+    BlockedStunned,
     Stunned,
+    Jumping,
     Airborne,
     Thrown,
     MovingBack

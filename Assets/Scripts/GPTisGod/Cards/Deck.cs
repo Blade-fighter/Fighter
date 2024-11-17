@@ -9,6 +9,12 @@ public class Deck : MonoBehaviour
     public List<CardData> hand = new List<CardData>(); // 手牌
     public int maxHandSize = 4; // 初始手牌数量
 
+    public GameObject cardUIPrefab; // 卡牌 UI 预制体
+    public Transform handPanel; // 用于显示手牌的 UI 面板
+    public float maxCardSpacing = 100f; // 卡牌之间的最大间隔
+    public float maxHandWidth = 600f; // 手牌的最大占用宽度
+    public float leftSpace=0f;//手牌最左侧的位置
+
     void Start()
     {
         StartBattle();
@@ -36,19 +42,14 @@ public class Deck : MonoBehaviour
             return; // 已达到手牌上限
         }
 
-        if (drawPile.Count == 0)
-        {
-            ReshuffleDiscardIntoDraw();
-        }
-
         if (drawPile.Count > 0)
         {
             CardData drawnCard = drawPile[0];
+            hand.Insert(0, drawnCard); // 将新卡牌插入手牌的最左边
             drawPile.RemoveAt(0);
-            hand.Add(drawnCard);
             Debug.Log("Drew card: " + drawnCard.cardName);
 
-            // TODO: 更新UI以显示新抽到的卡牌
+            // 更新手牌 UI
             UpdateHandUI();
         }
     }
@@ -59,44 +60,35 @@ public class Deck : MonoBehaviour
         {
             hand.Remove(card);
             discardPile.Add(card);
-            DrawCard(); // 保持手牌数量
-
-            // TODO: 更新UI以显示手牌和弃牌堆的变化
             UpdateHandUI();
-            UpdateDiscardPileUI();
+
+            // 检查是否存在任何无效引用
+            if (card == null)
+            {
+                Debug.LogWarning("Card reference is null, might have been destroyed unexpectedly.");
+            }
+
+            // 抽牌逻辑确保手牌上限
+            while (hand.Count < maxHandSize)
+            {
+                DrawCard();
+            }
+            if (drawPile.Count == 0)
+            {
+                ReshuffleDiscardIntoDraw(); // 抽牌堆为空时将弃牌堆洗入抽牌堆
+            }
         }
     }
 
-    public void AddCardToDeck(CardData card, bool isPermanent)
+    private void ReshuffleDiscardIntoDraw()//弃牌堆洗回抽牌堆
     {
-        if (isPermanent)
+        if (discardPile.Count > 0)
         {
-            allCards.Add(card); // 永久添加到完整卡组
+            drawPile.AddRange(discardPile);
+            discardPile.Clear();
+            Shuffle(drawPile);
+            Debug.Log("Reshuffled discard pile into draw pile.");
         }
-        else
-        {
-            drawPile.Add(card); // 临时添加，仅当前战斗生效
-        }
-    }
-
-    public void RemoveCardFromDeck(CardData card, bool isPermanent)
-    {
-        if (isPermanent)
-        {
-            allCards.Remove(card); // 永久移除
-        }
-        else
-        {
-            drawPile.Remove(card); // 临时移除
-        }
-    }
-
-    private void ReshuffleDiscardIntoDraw()
-    {
-        drawPile.AddRange(discardPile);
-        discardPile.Clear();
-        Shuffle(drawPile);
-        Debug.Log("Reshuffled discard pile into draw pile.");
     }
 
     private void Shuffle(List<CardData> cards)
@@ -112,11 +104,41 @@ public class Deck : MonoBehaviour
 
     private void UpdateHandUI()
     {
-        // TODO: 实现手牌的UI更新逻辑，确保新抽到的卡牌和打出的卡牌能够正确显示
+        // 清空当前手牌的 UI 显示
+        foreach (Transform child in handPanel)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // 计算卡牌间距
+        float cardSpacing = Mathf.Min(maxCardSpacing, maxHandWidth / Mathf.Max(1, hand.Count));
+
+        // 为每张手牌生成一个新的 UI 元素，并按顺序排列
+        for (int i = 0; i < hand.Count; i++)
+        {
+            CardData card = hand[i];
+            GameObject cardUI = Instantiate(cardUIPrefab, handPanel);
+            RectTransform cardRect = cardUI.GetComponent<RectTransform>();
+            cardRect.anchoredPosition = new Vector2(leftSpace+i * cardSpacing, 0); // 设置卡牌的位置，按顺序排列
+
+            // 设置卡牌的层级，确保后生成的卡牌在前一张之上
+            cardUI.transform.SetSiblingIndex(i);
+
+            CardUI cardUIScript = cardUI.GetComponent<CardUI>();
+            if (cardUIScript != null)
+            {
+                cardUIScript.cardData = card;
+                cardUIScript.UpdateCardVisual();
+            }
+            else
+            {
+                Debug.LogWarning("CardUI script is missing on the card UI prefab.");
+            }
+        }
     }
 
     private void UpdateDiscardPileUI()
     {
-        // TODO: 实现弃牌堆的UI更新逻辑
+        // TODO: 实现弃牌堆的 UI 更新逻辑
     }
 }
