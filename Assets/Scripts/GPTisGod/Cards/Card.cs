@@ -4,7 +4,7 @@ using UnityEngine;
 public class Card
 {
     public string name; // 卡牌名称
-    public string cardType;      //卡牌类型
+    public CardType cardType;      //卡牌类型
     public string cardDescription;//卡牌描述
     public Sprite cardImage;     // 卡牌图像
     public int startupKe; // 出招所需的刻数
@@ -18,7 +18,7 @@ public class Card
     private GameObject activeCollider; // 用于引用当前创建的碰撞体
 
     // 构造函数
-    public Card(string name, string cardType, string cardDescription, Sprite cardImage, int startupKe, int activeKe, int recoveryKe, CardEffect[] startEffect, CardEffect[] hitEffect, AttackCollider attackColliderPrefab)
+    public Card(string name, CardType cardType, string cardDescription, Sprite cardImage, int startupKe, int activeKe, int recoveryKe, CardEffect[] startEffect, CardEffect[] hitEffect, AttackCollider attackColliderPrefab)
     {
         this.name = name;
         this.cardType = cardType;
@@ -34,16 +34,54 @@ public class Card
 
     public void Execute(Character attacker, Character target)
     {
-        // 设置出招阶段状态
+        switch (cardType)
+        {
+            case CardType.Defense://防御
+                ExecuteDefense(attacker);
+                break;
+            case CardType.Attack://普通打击技
+                ExecuteAttack(attacker, target);
+                break;
+            // 其他类型的卡牌可以在这里继续添加
+            default:
+                Debug.LogWarning("未知的卡牌类型: " + cardType);
+                break;
+        }
+    }
+
+    private void ExecuteDefense(Character character)//防御的代码
+    {
+        // 设置角色为防御状态
+        character.SetState(CharacterState.Defending, startupKe);
+
+        // 恢复时间流动，以执行动作
+        TimeManager.Instance.ResumeGame();
+
+        // 延迟 startupKe 后恢复为 Idle 状态并暂停时间
+        ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + startupKe, () =>
+        {
+            character.SetState(CharacterState.Idle, 0);
+            TimeManager.Instance.PauseGame(); // 玩家恢复为 Idle 状态后暂停游戏
+
+            // 通知 CardUI 卡牌效果已完成
+            CardUI.CardEffectComplete();
+        }, character));
+    }
+
+    private void ExecuteAttack(Character attacker, Character target)
+    {
+        // 原有的攻击逻辑
         attacker.SetState(CharacterState.AttackingStartup, startupKe);
 
         // 恢复时间流动以执行动作
         TimeManager.Instance.ResumeGame();
-        //起始效果触发
+
+        // 起始效果触发
         foreach (CardEffect effect in startEffect)
         {
             effect?.Trigger(target, attacker);
         }
+
         // 延迟 startupKe 后进入命中判定阶段
         ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + startupKe, () =>
         {
@@ -62,7 +100,7 @@ public class Card
                 {
                     if (activeCollider != null && activeCollider.GetComponent<AttackCollider>().hit)
                     {
-                        Debug.Log("招式打中了"+target.gameObject);
+                        Debug.Log("招式打中了" + target.gameObject);
                         foreach (CardEffect effect in hitEffect)
                         {
                             effect?.Trigger(target, attacker);

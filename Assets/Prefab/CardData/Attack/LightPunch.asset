@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LightPunch
   m_EditorClassIdentifier: 
   cardName: LightPunch
-  cardType: Hit
+  cardType: 0
   cardDescription: putongyiquan
   cardImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   startupKe: 1
@@ -23,5 +23,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: beb0ebe14345dc04aab729f97bd66000, type: 2}
   hitEffect:
   - {fileID: 11400000, guid: cab492b5eeff19e409e5e74240549bcf, type: 2}
-  - {fileID: 11400000, guid: cfde95e77a9d7d348a8ee8940cd4ceeb, type: 2}
+  - {fileID: 11400000, guid: 1894e4394a383fc4f8374497573331e2, type: 2}
   collider: {fileID: 103070142021982681, guid: 371c9b6f8d532cc4d99051eb4993f080, type: 3}

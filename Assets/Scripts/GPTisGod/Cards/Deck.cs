@@ -45,7 +45,7 @@ public class Deck : MonoBehaviour
         if (drawPile.Count > 0)
         {
             CardData drawnCard = drawPile[0];
-            hand.Insert(0, drawnCard); // 将新卡牌插入手牌的最左边
+            hand.Add(drawnCard); // 将新卡牌插入手牌的最右边
             drawPile.RemoveAt(0);
             Debug.Log("Drew card: " + drawnCard.cardName);
 
@@ -53,6 +53,7 @@ public class Deck : MonoBehaviour
             UpdateHandUI();
         }
     }
+
 
     public void PlayCard(CardData card)
     {
