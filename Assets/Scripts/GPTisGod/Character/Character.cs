@@ -16,6 +16,7 @@ public class Character : MonoBehaviour
     public float rightBoundary = 19f;  // 场景最右边的x坐标
 
     private ScheduledAction currentAction;
+    public int launchValue = 0; // 角色当前的浮空值
 
     private void Update()
     {
@@ -47,6 +48,10 @@ public class Character : MonoBehaviour
             {
                 currentState = CharacterState.Idle;
                 canAct = true;
+                if (newState == CharacterState.Airborne)
+                {
+                    launchValue = 0; // 重置浮空值
+                }
             }
         }, this);
 

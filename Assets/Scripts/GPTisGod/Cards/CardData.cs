@@ -17,5 +17,6 @@ public class CardData : ScriptableObject
 public enum CardType //ø®≈∆¿‡–Õ
 {
     Attack,
-    Defense
+    Defense,
+    Launch
 }

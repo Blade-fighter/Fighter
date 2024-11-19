@@ -20,6 +20,7 @@ public class KeTrackerUI : MonoBehaviour
 
     void Update()
     {
+
         // 实时更新当前刻数
         currentKeText.text = "Current Ke: " + TimeManager.Instance.currentKe;
 

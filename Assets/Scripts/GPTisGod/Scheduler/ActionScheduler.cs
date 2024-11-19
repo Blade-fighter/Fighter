@@ -21,6 +21,9 @@ public class ActionScheduler : MonoBehaviour
 
     public void ProcessKe(int currentKe)
     {
+        // 对 actionQueue 按 executionKe 进行排序，确保判定动作优先执行
+        actionQueue.Sort((a, b) => a.executionKe.CompareTo(b.executionKe));
+
         for (int i = actionQueue.Count - 1; i >= 0; i--)
         {
             if (actionQueue[i].executionKe <= currentKe)
