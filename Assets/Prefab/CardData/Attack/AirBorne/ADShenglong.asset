@@ -17,7 +17,7 @@ MonoBehaviour:
   cardDescription: dimianshenlong
   cardImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   startupKe: 3
-  activeKe: 1
+  activeKe: 2
   recoveryKe: 9
   startEffect: []
   hitEffect:

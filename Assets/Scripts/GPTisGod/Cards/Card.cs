@@ -97,11 +97,7 @@ public class Card
                 activeCollider = attacker.CreateCollider(attackColliderPrefab);
             }
 
-            // 每刻检测命中判定
-            ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + startupKe, () =>
-            {
                 attacker.StartCoroutine(ActiveKeHitDetection(attacker, target));
-            }, attacker));
         }, attacker));
 
         // 延迟 startupKe + activeKe 后进入收招阶段
@@ -112,8 +108,8 @@ public class Card
             // 如果碰撞体未销毁，则在收招阶段销毁
             if (activeCollider != null)
             {
-                Debug.Log(TimeManager.Instance.currentKe + "刻时候" + activeCollider + "销毁了");
-                GameObject.Destroy(activeCollider);
+                //Debug.Log(TimeManager.Instance.currentKe + "刻时候" + activeCollider + "销毁了");
+                //GameObject.Destroy(activeCollider);
             }
         }, attacker));
 
@@ -132,8 +128,8 @@ public class Card
     {
         for (int i = 0; i < activeKe; i++)
         {
-            yield return new WaitForSeconds(TimeManager.Instance.keDuration);
-
+            yield return Time.deltaTime;
+            //Debug.Log(activeCollider + "的hit是" + activeCollider.GetComponent<AttackCollider>().hit);
             if (activeCollider != null && activeCollider.GetComponent<AttackCollider>().hit)
             {
                 Debug.Log("在第" + (TimeManager.Instance.currentKe) + "刻，招式打中了" + target.gameObject);
@@ -146,6 +142,7 @@ public class Card
                 activeCollider = null;
                 yield break; // 结束协程，因为已经命中目标
             }
+            yield return new WaitForSeconds(TimeManager.Instance.keDuration);
         }
     }
 }
