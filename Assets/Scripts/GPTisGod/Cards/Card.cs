@@ -72,9 +72,9 @@ public class Card
         }, character));
     }
 
-    private void ExecuteAttack(Character attacker, Character target)
+
+    public void ExecuteAttack(Character attacker, Character target)
     {
-        // 原有的攻击逻辑
         attacker.SetState(CharacterState.AttackingStartup, startupKe);
 
         // 恢复时间流动以执行动作
@@ -97,8 +97,27 @@ public class Card
                 activeCollider = attacker.CreateCollider(attackColliderPrefab);
             }
 
-                attacker.StartCoroutine(ActiveKeHitDetection(attacker, target));
         }, attacker));
+
+        // 在每一刻的命中判定中进行检测
+        for (int i = 0; i < activeKe; i++)
+        {
+            int keToExecute = TimeManager.Instance.currentKe + startupKe + i;
+            ActionScheduler.Instance.ScheduleAction(new ScheduledAction(keToExecute, () =>
+            {
+                if (activeCollider != null && activeCollider.GetComponent<AttackCollider>().hit)
+                {
+                    Debug.Log("招式打中了: " + target.gameObject.name);
+                    foreach (CardEffect effect in hitEffect)
+                    {
+                        effect?.Trigger(target, attacker);
+                    }
+                    // 销毁攻击碰撞体，避免多次触发
+                    GameObject.Destroy(activeCollider);
+                    activeCollider = null;
+                }
+            }, attacker));
+        }
 
         // 延迟 startupKe + activeKe 后进入收招阶段
         ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + startupKe + activeKe, () =>
@@ -107,9 +126,21 @@ public class Card
 
             // 如果碰撞体未销毁，则在收招阶段销毁
             if (activeCollider != null)
-            {
-                //Debug.Log(TimeManager.Instance.currentKe + "刻时候" + activeCollider + "销毁了");
-                //GameObject.Destroy(activeCollider);
+            {   
+                //收招时再判定一次
+                if (activeCollider.GetComponent<AttackCollider>().hit)
+                {
+                    Debug.Log("招式打中了: " + target.gameObject.name);
+                    foreach (CardEffect effect in hitEffect)
+                    {
+                        effect?.Trigger(target, attacker);
+                    }
+                    // 销毁攻击碰撞体，避免多次触发
+                    GameObject.Destroy(activeCollider);
+                    activeCollider = null;
+                }
+                Debug.Log(TimeManager.Instance.currentKe + "刻时候" + activeCollider + "销毁了");
+                GameObject.Destroy(activeCollider);
             }
         }, attacker));
 
@@ -123,26 +154,6 @@ public class Card
             CardUI.CardEffectComplete();
         }, attacker));
     }
-
-    private IEnumerator ActiveKeHitDetection(Character attacker, Character target)
-    {
-        for (int i = 0; i < activeKe; i++)
-        {
-            yield return Time.deltaTime;
-            //Debug.Log(activeCollider + "的hit是" + activeCollider.GetComponent<AttackCollider>().hit);
-            if (activeCollider != null && activeCollider.GetComponent<AttackCollider>().hit)
-            {
-                Debug.Log("在第" + (TimeManager.Instance.currentKe) + "刻，招式打中了" + target.gameObject);
-                foreach (CardEffect effect in hitEffect)
-                {
-                    effect?.Trigger(target, attacker);
-                }
-                // 销毁攻击碰撞体，避免多次触发
-                GameObject.Destroy(activeCollider);
-                activeCollider = null;
-                yield break; // 结束协程，因为已经命中目标
-            }
-            yield return new WaitForSeconds(TimeManager.Instance.keDuration);
-        }
-    }
 }
+
+

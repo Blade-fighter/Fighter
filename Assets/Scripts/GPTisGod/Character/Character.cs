@@ -15,8 +15,9 @@ public class Character : MonoBehaviour
     public float leftBoundary = -19f;  // 场景最左边的x坐标
     public float rightBoundary = 19f;  // 场景最右边的x坐标
 
-    private ScheduledAction currentAction;
+    public ScheduledAction currentAction;
     public int launchValue = 0; // 角色当前的浮空值
+    public float groundHeight=0;//地面高度
 
     private void Update()
     {
@@ -37,7 +38,7 @@ public class Character : MonoBehaviour
         {
             currentAction.Cancel();
         }
-
+        Debug.Log(gameObject.name +"从" +currentState+ "进入" + newState + "时间" + durationKe + "刻");
         currentState = newState;
         canAct = false;
 
@@ -122,39 +123,100 @@ public class Character : MonoBehaviour
         // 执行卡牌逻辑
         card.Execute(this, target);
     }
-    // 使用协程来实现平滑移动
+
+    // 基于刻数实现平滑移动
     public void MoveOverTime(float distance, int durationKe)
     {
         if (durationKe <= 0) return; // 确保持续时间为正数
 
-        float duration = durationKe * TimeManager.Instance.keDuration; // 总持续时间
+        int startKe = TimeManager.Instance.currentKe;
+        int endKe = startKe + durationKe;
         Vector3 startPosition = transform.position;
-        if (dir)//朝左，反向
+        Vector3 targetPosition = dir ? startPosition - new Vector3(distance, 0, 0) : startPosition + new Vector3(distance, 0, 0);
+
+        for (int i = 0; i < durationKe; i++)
         {
-            Vector3 targetPosition = startPosition - new Vector3(distance, 0, 0);
-            StartCoroutine(SmoothMove(startPosition, targetPosition, duration));
-        }
-        else//朝右，正向
-        {
-            Vector3 targetPosition = startPosition + new Vector3(distance, 0, 0);
-            StartCoroutine(SmoothMove(startPosition, targetPosition, duration));
+            int keToExecute = startKe + i;
+            ActionScheduler.Instance.ScheduleAction(new ScheduledAction(keToExecute, () =>
+            {
+                float t = (float)(TimeManager.Instance.currentKe - startKe) / durationKe;
+                transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+
+                // 在最后一刻确保位置精确到达目标点
+                if (TimeManager.Instance.currentKe == endKe)
+                {
+                    transform.position = targetPosition;
+                }
+            }, this));
         }
     }
 
-    // 协程，用于在一定时间内平滑移动
-    private IEnumerator SmoothMove(Vector3 startPosition, Vector3 targetPosition, float duration)
+    public void ApplyAirborneEffect(float airborneHeight, int airborneTimeKe)
     {
-        float elapsed = 0f;
+        int startKe = TimeManager.Instance.currentKe;
+        int halfAirborneTimeKe = airborneTimeKe / 2;
+        int extraKe = airborneTimeKe % 2;
+        int peakKe = startKe + halfAirborneTimeKe + extraKe;
+        int endKe = startKe + airborneTimeKe;
+        float startY = transform.position.y;
+        float peakY = startY + airborneHeight;
 
-        while (elapsed < duration)
+        // 上升阶段
+        for (int i = 0; i < halfAirborneTimeKe + extraKe; i++)
         {
-            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsed / duration);
-            elapsed += Time.deltaTime;
-            yield return null; // 等待下一帧
+            int keToExecute = startKe + i;
+            ActionScheduler.Instance.ScheduleAction(new ScheduledAction(keToExecute, () =>
+            {
+                float t = (float)(TimeManager.Instance.currentKe - startKe) / (halfAirborneTimeKe + extraKe);
+                transform.position = new Vector3(transform.position.x, Mathf.Lerp(startY, peakY, t), transform.position.z);
+            }, this));
         }
 
-        transform.position = targetPosition; // 确保到达最终位置
+        // 下降阶段
+        for (int i = 0; i < halfAirborneTimeKe; i++)
+        {
+            int keToExecute = peakKe + i;
+            ActionScheduler.Instance.ScheduleAction(new ScheduledAction(keToExecute, () =>
+            {
+                float t = (float)(TimeManager.Instance.currentKe - peakKe) / halfAirborneTimeKe;
+                transform.position = new Vector3(transform.position.x, Mathf.Lerp(peakY, groundHeight, t), transform.position.z);
+
+                // 在最后一刻确保位置精确到达地面
+                if (TimeManager.Instance.currentKe == endKe)
+                {
+                    Debug.Log("浮空归位");
+                    transform.position = new Vector3(transform.position.x, groundHeight, transform.position.z);
+                }
+            }, this));
+        }
     }
+
+    // 施加AirborneAttacked状态时，敌人在硬直时间内返回地面
+    public void ApplyAirborneAttackedEffect(int recoveryKe)
+    {
+        int startKe = TimeManager.Instance.currentKe;
+        int endKe = startKe + recoveryKe;
+        float startHeight = transform.position.y;
+        float targetHeight = groundHeight;
+
+        for (int i = 0; i < recoveryKe; i++)
+        {
+            int keToExecute = startKe + i;
+            ActionScheduler.Instance.ScheduleAction(new ScheduledAction(keToExecute, () =>
+            {
+                float t = (float)(TimeManager.Instance.currentKe - startKe) / recoveryKe;
+                transform.position = new Vector3(transform.position.x, Mathf.Lerp(startHeight, targetHeight, t), transform.position.z);
+
+                // 在最后一刻确保位置精确到达地面高度
+                if (TimeManager.Instance.currentKe == endKe-1)
+                {
+                    //浮空受击归位
+                    transform.position = new Vector3(transform.position.x, targetHeight, transform.position.z);
+                }
+            }, this));
+        }
+    }
+
 }
 
 public enum CharacterState
@@ -168,6 +230,7 @@ public enum CharacterState
     Stunned,
     Jumping,
     Airborne,
+    AirborneAttacked,
     Thrown,
     MovingBack
 }

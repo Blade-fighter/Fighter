@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 00ce485944499be45a2b1f5576322615, type: 3}
   m_Name: LpTargetMove
-  m_EditorClassIdentifier: Assembly-CSharp::MoveEffect
+  m_EditorClassIdentifier: 
   targetMoveBack: 0.6
   targetMoveKe: 1
   attackerMove: 0

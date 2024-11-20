@@ -21,5 +21,5 @@ MonoBehaviour:
   recoveryKe: 9
   startEffect: []
   hitEffect:
-  - {fileID: 11400000, guid: f011fa3008cde724d9fd461fbc9b4c85, type: 2}
+  - {fileID: 11400000, guid: eae7764f3437697489ff2d2106a042db, type: 2}
   collider: {fileID: 103070142021982681, guid: 371c9b6f8d532cc4d99051eb4993f080, type: 3}

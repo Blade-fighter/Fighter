@@ -28,6 +28,13 @@ public abstract class CardEffect : ScriptableObject
         {
             target.SetState(CharacterState.Stunned, recoveryPunishHardness); // 确反硬直
         }
+        else if (target.currentState == CharacterState.Airborne|| target.currentState == CharacterState.Jumping)
+        {
+            //浮空
+            Debug.Log("浮空技命中空中敌人");
+            target.SetState(CharacterState.AirborneAttacked, idleHardness); // 命中空中敌人（浮空/跳）
+            target.ApplyAirborneAttackedEffect(idleHardness);
+        }
     }
 
     //浮空效果
@@ -46,21 +53,25 @@ public abstract class CardEffect : ScriptableObject
             {
                 target.launchValue += first;
                 target.SetState(CharacterState.Airborne, time);//普通效果
+                target.ApplyAirborneEffect(value, time);
             }
             else if (target.currentState == CharacterState.AttackingStartup || target.currentState == CharacterState.AttackingActive)
             {
                 target.launchValue += first;
                 target.SetState(CharacterState.Airborne, time); // 打康效果
+                target.ApplyAirborneEffect(value, time);
             }
             else if (target.currentState == CharacterState.Recovery)
             {
                 target.launchValue += first;
                 target.SetState(CharacterState.Airborne, time); // 确反硬直
+                target.ApplyAirborneEffect(value, time);
             }
             else if (target.currentState == CharacterState.Airborne)
             {
                 target.launchValue += next;
                 target.SetState(CharacterState.Airborne, time); // 确反硬直
+                target.ApplyAirborneEffect(value, time);
             }
         }
         else
@@ -85,79 +96,8 @@ public abstract class CardEffect : ScriptableObject
         }
         if (attacker != null)
         {
-            //普通的给自己添加移动效果
+            //普通的给自身添加移动效果
             attacker.MoveOverTime(attackerMove, attackerMoveKe);
         }
-    }
-}
-
-[CreateAssetMenu(fileName = "New Move Effect", menuName = "Card Effects/Move Effect")]
-public class MoveEffect : CardEffect//移动效果
-{
-    public float targetMoveBack;//敌方后退距离
-    public int targetMoveKe;//敌方后退时间刻
-    public float attackerMove;//我方前进距离
-    public int attackerMoveKe;//我方前进时间刻
-    public override void Trigger(Character target, Character attacker)
-    {
-        ApplyMove(target, attacker,targetMoveBack,targetMoveKe,attackerMove,attackerMoveKe);
-    }
-}
-
-
-[CreateAssetMenu(fileName = "New Hardness Effect", menuName = "Card Effects/Hardness Effect")]
-public class HardnessEffect : CardEffect//硬直效果
-{
-    public int idleHardness;     // 受击状态的硬直时间
-    public int defendingHardness; // 防御时的硬直时间
-    public int attackInterruptedHardness; // 被打断时的硬直时间
-    public int recoveryPunishHardness; // 被确反时的硬直时间
-    public override void Trigger(Character target, Character attacker)
-    {
-        if (target.currentState != CharacterState.Airborne || target.currentState != CharacterState.Jumping)//空中情况特殊考虑
-        {
-            ApplyHardness(target, idleHardness, defendingHardness, attackInterruptedHardness, recoveryPunishHardness);
-        }
-        else if (true)
-        {
-            //浮空
-
-        }
-        else
-        {
-            //跳跃攻击中
-        }
-    }
-}
-[CreateAssetMenu(fileName = "New AirBorne Effect", menuName = "Card Effects/AirBorne Effect")]
-public class AirBorneEffect : CardEffect
-{
-    public int defendingHardness; // 防御时的硬直时间
-
-    public int airborneTime;//增加的浮空时间
-    public float airborneValue;//浮空上升距离
-
-    public int launchFirst; //命中未浮空敌人的浮空量
-    public int launchNext;//命中已浮空敌人的浮空量
-    public int launchMax;//浮空上限，当敌人浮空值大于此值无法命中
-
-    public MoveEffect targetMoveEffect;
-
-    public override void Trigger(Character target, Character attacker)
-    {
-        ApplyAirBorne(target,attacker, defendingHardness, airborneTime, airborneValue, launchFirst, launchNext, launchMax, targetMoveEffect);
-    }
-}
-
-
-[CreateAssetMenu(fileName = "New Heal Effect", menuName = "Card Effects/Heal Effect")]
-public class HealEffect : CardEffect
-{
-    public int healAmount; // 治疗量
-
-    public override void Trigger(Character target, Character attacker)
-    {
-        target.Heal(healAmount);
-        Debug.Log(target.name + " is healed for " + healAmount + " health.");
     }
 }

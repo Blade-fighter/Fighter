@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: ADShenglongEffect
-  m_EditorClassIdentifier: Assembly-CSharp::AirBorneEffect
+  m_Script: {fileID: 11500000, guid: 82c77ad9ebcb60f4cac118e351a3464e, type: 3}
+  m_Name: SLEffect
+  m_EditorClassIdentifier: 
   defendingHardness: 5
-  airborneTime: 12
-  airborneValue: 10
-  launchFirst: 6
-  launchNext: 6
+  airborneTime: 15
+  airborneValue: 6
+  launchFirst: 5
+  launchNext: 5
   launchMax: 10
   targetMoveEffect: {fileID: 11400000, guid: 1894e4394a383fc4f8374497573331e2, type: 2}

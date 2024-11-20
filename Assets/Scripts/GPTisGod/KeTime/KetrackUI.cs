@@ -1,50 +1,45 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 
 public class KeTrackerUI : MonoBehaviour
 {
-    public Text currentKeText; // 用于显示当前刻数的文本
-    public Text playerKeStatusText; // 用于显示玩家状态的文本
-    public Text enemyKeStatusText; // 用于显示敌人状态的文本
-
+    public Text currentKeText;
+    public Text playerKeText;
+    public Text enemyKeText;
     public Character playerCharacter;
     public Character enemyCharacter;
 
-    void Start()
+    private void Start()
     {
         // 获取玩家和敌人的 Character 实例
         playerCharacter = GameObject.FindGameObjectWithTag("Player").GetComponent<Character>();
         enemyCharacter = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Character>();
     }
-
     void Update()
     {
+        currentKeText.text = "当前刻数: "+TimeManager.Instance.currentKe;
+        // 获取玩家和敌人的当前调度动作，并获取其剩余的刻数
+        ScheduledAction playerAction = playerCharacter.currentAction;
+        ScheduledAction enemyAction = enemyCharacter.currentAction;
 
-        // 实时更新当前刻数
-        currentKeText.text = "Current Ke: " + TimeManager.Instance.currentKe;
-
-        // 更新玩家的状态刻数信息
-        if (playerCharacter != null)
+        // 如果玩家有调度动作，显示其剩余的刻数
+        if (playerAction != null&&playerCharacter.currentState!=CharacterState.Idle)
         {
-            playerKeStatusText.text = "Player State: " + playerCharacter.currentState + "\nRemaining Ke: " + GetRemainingKe(playerCharacter);
+            playerKeText.text = "玩家状态: " + playerCharacter.currentState + " 剩余刻数: " + (playerAction.executionKe - TimeManager.Instance.currentKe);
+        }
+        else
+        {
+            playerKeText.text = "玩家状态: " + playerCharacter.currentState + " 剩余刻数: 0";
         }
 
-        // 更新敌人的状态刻数信息
-        if (enemyCharacter != null)
+        // 如果敌人有调度动作，显示其剩余的刻数
+        if (enemyAction != null && enemyCharacter.currentState != CharacterState.Idle)
         {
-            enemyKeStatusText.text = "Enemy State: " + enemyCharacter.currentState + "\nRemaining Ke: " + GetRemainingKe(enemyCharacter);
+            enemyKeText.text = "敌人状态: " + enemyCharacter.currentState + " 剩余刻数: " + (enemyAction.executionKe - TimeManager.Instance.currentKe);
         }
-    }
-
-    private int GetRemainingKe(Character character)
-    {
-        // 获取角色当前状态剩余的刻数
-        ScheduledAction action = ActionScheduler.Instance.GetScheduledActionForCharacter(character);
-        if (action != null)
+        else
         {
-            return action.executionKe - TimeManager.Instance.currentKe;
+            enemyKeText.text = "敌人状态: " + enemyCharacter.currentState + " 剩余刻数: 0";
         }
-        return 0;
     }
 }

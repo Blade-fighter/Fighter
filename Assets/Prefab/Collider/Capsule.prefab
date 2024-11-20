@@ -134,4 +134,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Creator: {fileID: 0}
-  loc: {x: 7, y: 0, z: 0}
+  loc: {x: 7, y: 1.5, z: 0}
+  hit: 0

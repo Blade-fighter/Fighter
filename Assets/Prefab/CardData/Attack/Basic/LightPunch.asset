@@ -22,6 +22,6 @@ MonoBehaviour:
   startEffect:
   - {fileID: 11400000, guid: beb0ebe14345dc04aab729f97bd66000, type: 2}
   hitEffect:
-  - {fileID: 11400000, guid: cab492b5eeff19e409e5e74240549bcf, type: 2}
+  - {fileID: 11400000, guid: d85326e427dee124087f9ffe3afce6e9, type: 2}
   - {fileID: 11400000, guid: 1894e4394a383fc4f8374497573331e2, type: 2}
   collider: {fileID: 103070142021982681, guid: 371c9b6f8d532cc4d99051eb4993f080, type: 3}

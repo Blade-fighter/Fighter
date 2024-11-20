@@ -35,7 +35,7 @@ public class PlayerMovementButtons : MonoBehaviour
             {
                 playerCharacter.MoveOverTime(-distance, moveDurationKe);
             }
-            else
+            else if(!playerCharacter.dir)
             {
                 playerCharacter.MoveOverTime(distance, moveDurationKe);
             }
