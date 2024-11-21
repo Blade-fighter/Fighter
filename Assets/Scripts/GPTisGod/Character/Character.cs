@@ -118,7 +118,7 @@ public class Character : MonoBehaviour
     public void ExecuteCard(CardData cardData, Character target)
     {
         // 创建卡牌
-        Card card = new Card(cardData.cardName, cardData.cardType,cardData.cardDescription,cardData.cardImage,cardData.startupKe, cardData.activeKe, cardData.recoveryKe, cardData.startEffect,cardData.hitEffect,cardData.collider);
+        Card card = new Card(cardData.cardName, cardData.cardType,cardData.cardDescription,cardData.cardImage,cardData.startupKe, cardData.activeKe, cardData.recoveryKe, cardData.startEffect,cardData.hitEffect,cardData.collider,cardData.multiHitData);
 
         // 执行卡牌逻辑
         card.Execute(this, target);
@@ -182,7 +182,7 @@ public class Character : MonoBehaviour
                 transform.position = new Vector3(transform.position.x, Mathf.Lerp(peakY, groundHeight, t), transform.position.z);
 
                 // 在最后一刻确保位置精确到达地面
-                if (TimeManager.Instance.currentKe == endKe)
+                if (TimeManager.Instance.currentKe == endKe-1)
                 {
                     Debug.Log("浮空归位");
                     transform.position = new Vector3(transform.position.x, groundHeight, transform.position.z);
@@ -210,7 +210,7 @@ public class Character : MonoBehaviour
                 // 在最后一刻确保位置精确到达地面高度
                 if (TimeManager.Instance.currentKe == endKe-1)
                 {
-                    //浮空受击归位
+                    Debug.Log("浮空受击归位");
                     transform.position = new Vector3(transform.position.x, targetHeight, transform.position.z);
                 }
             }, this));

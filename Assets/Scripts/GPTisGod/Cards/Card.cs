@@ -10,16 +10,17 @@ public class Card
     public Sprite cardImage;     // 卡牌图像
     public int startupKe; // 出招所需的刻数
     public int activeKe; // 命中判定所需的刻数
-    public int recoveryKe; // 收招所需的刻数
+    public int recoveryKe; // 收招所需的刻数,多段招式只需设置这个
     public int damage; // 伤害值
     public CardEffect[] startEffect; // 卡牌打出时附带的效果
     public CardEffect[] hitEffect; // 卡牌命中时附带的效果
     public AttackCollider attackColliderPrefab; // 攻击碰撞体预制体
 
-    private GameObject activeCollider; // 用于引用当前创建的碰撞体
+    public GameObject activeCollider; // 用于引用当前创建的碰撞体
 
+    public List<HitData> multiHitData; // 多段攻击的数据
     // 构造函数
-    public Card(string name, CardType cardType, string cardDescription, Sprite cardImage, int startupKe, int activeKe, int recoveryKe, CardEffect[] startEffect, CardEffect[] hitEffect, AttackCollider attackColliderPrefab)
+    public Card(string name, CardType cardType, string cardDescription, Sprite cardImage, int startupKe, int activeKe, int recoveryKe, CardEffect[] startEffect, CardEffect[] hitEffect, AttackCollider attackColliderPrefab,List<HitData> multiHitData)
     {
         this.name = name;
         this.cardType = cardType;
@@ -31,6 +32,7 @@ public class Card
         this.startEffect = startEffect;
         this.hitEffect = hitEffect;
         this.attackColliderPrefab = attackColliderPrefab;
+        this.multiHitData = multiHitData;
     }
 
     public void Execute(Character attacker, Character target)
@@ -45,6 +47,9 @@ public class Card
                 break;
             case CardType.Launch://浮空技
                 ExecuteAttack(attacker, target);
+                break;
+            case CardType.MultiHit:
+                ExecuteMultiHitAttack(attacker, target);
                 break;
             // 其他类型的卡牌可以在这里继续添加
             default:
@@ -153,6 +158,70 @@ public class Card
             // 通知 CardUI 卡牌效果已完成
             CardUI.CardEffectComplete();
         }, attacker));
+    }
+    private void ExecuteMultiHitAttack(Character attacker, Character target)
+    {
+        int currentHitIndex = 0;
+
+        void ExecuteNextHit()
+        {
+            if (currentHitIndex >= multiHitData.Count)
+            {
+                // 所有攻击段已完成，进入收招阶段
+                attacker.SetState(CharacterState.Recovery, recoveryKe);
+                // 延迟 startupKe + activeKe + recoveryKe 后恢复为 Idle 状态并暂停时间
+                ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + startupKe + activeKe + recoveryKe, () =>
+                {
+                    attacker.SetState(CharacterState.Idle, 0);
+                    TimeManager.Instance.PauseGame(); // 玩家恢复为 Idle 状态后暂停游戏
+
+                    // 通知 CardUI 卡牌效果已完成
+                    CardUI.CardEffectComplete();
+                }, attacker));
+                return;
+            }
+
+            HitData currentHit = multiHitData[currentHitIndex];
+            attacker.SetState(CharacterState.AttackingStartup, currentHit.startupKe);
+            // 恢复时间流动以执行动作
+            TimeManager.Instance.ResumeGame();
+
+            foreach (CardEffect effect in currentHit.startEffects)//每段的起始效果
+            {
+                effect?.Trigger(target, attacker);
+            }
+            // 创建碰撞体
+            GameObject activeCollider = attacker.CreateCollider(currentHit.attackColliderPrefab.GetComponent<AttackCollider>());
+
+            // 延迟 startupKe 后进入命中判定阶段
+            ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + currentHit.startupKe, () =>
+            {
+                attacker.SetState(CharacterState.AttackingActive, currentHit.activeKe);
+
+                // 命中判定逻辑
+                ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + currentHit.activeKe, () =>
+                {
+                    if (activeCollider != null && activeCollider.GetComponent<AttackCollider>().hit)
+                    {
+                        Debug.Log("第" + (currentHitIndex + 1) + "段攻击命中: " + target.gameObject.name);
+                        foreach (CardEffect effect in currentHit.hitEffects)
+                        {
+                            effect?.Trigger(target, attacker);
+                        }
+                    }
+
+                    // 销毁当前碰撞体
+                    GameObject.Destroy(activeCollider);
+
+                    // 调度下一段攻击
+                    currentHitIndex++;
+                    ExecuteNextHit();
+                }, attacker));
+            }, attacker));
+        }
+
+        // 执行第一段攻击
+        ExecuteNextHit();
     }
 }
 
