@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.WSA;
@@ -98,6 +99,37 @@ public abstract class CardEffect : ScriptableObject
         {
             //普通的给自身添加移动效果
             attacker.MoveOverTime(attackerMove, attackerMoveKe);
+        }
+    }
+    public void ApplyMultiStepMove(Character character, List<StepMoveData> moveSteps, bool toGround)
+    {
+        if (character != null && moveSteps != null && moveSteps.Count > 0)
+        {
+            int startKe = TimeManager.Instance.currentKe;
+            int accumulatedKe = 0;
+
+            int totalTime = 0;
+            foreach (StepMoveData step in moveSteps)
+            {
+                totalTime += step.ke;
+            }
+            if (toGround)
+            {
+                ActionScheduler.Instance.ScheduleAction(new ScheduledAction(startKe +totalTime, () =>
+                {
+                    //回到地面
+                    character.transform.position = new Vector3(character.transform.position.x, 0, character.transform.position.z);
+                }, character));
+            }
+            foreach (StepMoveData step in moveSteps)
+            {
+                accumulatedKe += step.ke;
+                int executeKe = startKe + accumulatedKe;
+                ActionScheduler.Instance.ScheduleAction(new ScheduledAction(executeKe, () =>
+                {
+                    character.StepMove(step.moveVector, step.ke);
+                }, character));
+            }
         }
     }
 }

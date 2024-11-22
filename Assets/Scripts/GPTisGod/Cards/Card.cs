@@ -51,6 +51,9 @@ public class Card
             case CardType.MultiHit:
                 ExecuteMultiHitAttack(attacker, target);
                 break;
+            case CardType.Move:
+                ExecuteMove(attacker, target);
+                break;
             // 其他类型的卡牌可以在这里继续添加
             default:
                 Debug.LogWarning("未知的卡牌类型: " + cardType);
@@ -222,6 +225,28 @@ public class Card
 
         // 执行第一段攻击
         ExecuteNextHit();
+    }
+
+    //纯移动代码，测试用
+    public void ExecuteMove(Character attacker, Character target)
+    {
+        // 恢复时间流动以执行动作
+        TimeManager.Instance.ResumeGame();
+
+        // 起始效果触发
+        foreach (CardEffect effect in startEffect)
+        {
+            effect?.Trigger(target, attacker);
+        }
+        // 延迟 startupKe + activeKe + recoveryKe 后恢复为 Idle 状态并暂停时间
+        ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + startupKe + activeKe + recoveryKe, () =>
+        {
+            attacker.SetState(CharacterState.Idle, 0);
+            TimeManager.Instance.PauseGame(); // 玩家恢复为 Idle 状态后暂停游戏
+
+            // 通知 CardUI 卡牌效果已完成
+            CardUI.CardEffectComplete();
+        }, attacker));
     }
 }
 

@@ -21,5 +21,6 @@ public enum CardType //ø®≈∆¿‡–Õ
     Attack,
     Defense,
     Launch,
-    MultiHit
+    MultiHit,
+    Move
 }

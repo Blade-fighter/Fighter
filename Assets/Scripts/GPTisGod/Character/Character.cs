@@ -216,7 +216,31 @@ public class Character : MonoBehaviour
             }, this));
         }
     }
+    public void StepMove(Vector2 moveVector, int durationKe)
+    {
+        if (durationKe <= 0) return; // 确保持续时间为正数
 
+        int startKe = TimeManager.Instance.currentKe;
+        int endKe = startKe + durationKe;
+        Vector3 startPosition = transform.position;
+        Vector3 targetPosition = startPosition + new Vector3(moveVector.x, moveVector.y, 0);
+
+        for (int i = 0; i < durationKe; i++)
+        {
+            int keToExecute = startKe + i;
+            ActionScheduler.Instance.ScheduleAction(new ScheduledAction(keToExecute, () =>
+            {
+                float t = (float)(TimeManager.Instance.currentKe - startKe) / durationKe;
+                transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+
+                // 在最后一刻确保位置精确到达目标点
+                if (TimeManager.Instance.currentKe == endKe - 1)
+                {
+                    transform.position = targetPosition;
+                }
+            }, this));
+        }
+    }
 }
 
 public enum CharacterState
