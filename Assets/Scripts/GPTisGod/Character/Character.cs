@@ -17,9 +17,9 @@ public class Character : MonoBehaviour
 
     public ScheduledAction currentAction;
     public int launchValue = 0; // 角色当前的浮空值
-    public float groundHeight=0;//地面高度
+    public float groundHeight= 0;//地面高度
 
-    private void Update()
+    private void FixedUpdate()
     {
         //防止角色飞出地图
         if (gameObject.transform.position.x >= rightBoundary)
@@ -30,6 +30,26 @@ public class Character : MonoBehaviour
         {
             gameObject.transform.position = new Vector3(leftBoundary, gameObject.transform.position.y, gameObject.transform.position.z);
         }
+
+        //判断方向,很愚蠢的做法，但能用
+        if (gameObject.tag == "Player")
+        {
+            dir = GameObject.FindWithTag("Enemy").transform.position.x<=gameObject.transform.position.x;
+        }
+        if (gameObject.tag == "Enemy")
+        {
+            dir = GameObject.FindWithTag("Player").transform.position.x < gameObject.transform.position.x;
+        }
+        //换边时,变为Idle后图像翻转
+        if (dir && currentState == CharacterState.Idle)
+        {
+            gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().flipX = true;
+        }
+        else if(!dir && currentState==CharacterState.Idle)
+        {
+            gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().flipX = false;
+        }
+
     }
     public void SetState(CharacterState newState, int durationKe)
     {
@@ -118,7 +138,7 @@ public class Character : MonoBehaviour
     public void ExecuteCard(CardData cardData, Character target)
     {
         // 创建卡牌
-        Card card = new Card(cardData.cardName, cardData.cardType,cardData.cardDescription,cardData.cardImage,cardData.startupKe, cardData.activeKe, cardData.recoveryKe, cardData.startEffect,cardData.hitEffect,cardData.collider,cardData.multiHitData);
+        Card card = new Card(cardData.cardName, cardData.cardType,cardData.cardDescription,cardData.cardImage,cardData.startupKe, cardData.activeKe, cardData.recoveryKe, cardData.collider, cardData.startEffect,cardData.hitEffect,cardData.multiHitData);
 
         // 执行卡牌逻辑
         card.Execute(this, target);

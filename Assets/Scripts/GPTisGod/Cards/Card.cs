@@ -20,7 +20,7 @@ public class Card
 
     public List<HitData> multiHitData; // 多段攻击的数据
     // 构造函数
-    public Card(string name, CardType cardType, string cardDescription, Sprite cardImage, int startupKe, int activeKe, int recoveryKe, CardEffect[] startEffect, CardEffect[] hitEffect, AttackCollider attackColliderPrefab,List<HitData> multiHitData)
+    public Card(string name, CardType cardType, string cardDescription, Sprite cardImage, int startupKe, int activeKe, int recoveryKe, AttackCollider attackColliderPrefab, CardEffect[] startEffect, CardEffect[] hitEffect,List<HitData> multiHitData)
     {
         this.name = name;
         this.cardType = cardType;
@@ -29,9 +29,10 @@ public class Card
         this.startupKe = startupKe;
         this.activeKe = activeKe;
         this.recoveryKe = recoveryKe;
+        this.attackColliderPrefab = attackColliderPrefab;
+        //动画加在这里
         this.startEffect = startEffect;
         this.hitEffect = hitEffect;
-        this.attackColliderPrefab = attackColliderPrefab;
         this.multiHitData = multiHitData;
     }
 
