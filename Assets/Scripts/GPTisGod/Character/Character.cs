@@ -1,6 +1,8 @@
 // 示例：角色类
 using UnityEngine;
 using System.Collections;
+using static UnityEngine.GraphicsBuffer;
+using Unity.VisualScripting;
 
 public class Character : MonoBehaviour
 {
@@ -16,12 +18,22 @@ public class Character : MonoBehaviour
     public float rightBoundary = 19f;  // 场景最右边的x坐标
 
     public ScheduledAction currentAction;
+
     public int launchValue = 0; // 角色当前的浮空值
     public float groundHeight= 0;//地面高度
 
-    private void FixedUpdate()
+    public bool shouldGoToDowned=true;//是否倒地标志位
+    public int currentAirbornePriority = 0;//多个浮空招式连续命中时，用于判断是否倒地的值
+
+    public Animator animator;
+
+    private void Start()
     {
-        //防止角色飞出地图
+        animator =  transform.GetChild(0).GetComponent<Animator>();
+    }
+    private void Update()
+    {
+        //防止角色飞出地图,愚蠢做法
         if (gameObject.transform.position.x >= rightBoundary)
         {
             gameObject.transform.position = new Vector3(rightBoundary, gameObject.transform.position.y, gameObject.transform.position.z);
@@ -31,6 +43,9 @@ public class Character : MonoBehaviour
             gameObject.transform.position = new Vector3(leftBoundary, gameObject.transform.position.y, gameObject.transform.position.z);
         }
 
+    }
+    private void FixedUpdate()
+    {
         //判断方向,很愚蠢的做法，但能用
         if (gameObject.tag == "Player")
         {
@@ -51,8 +66,10 @@ public class Character : MonoBehaviour
         }
 
     }
+
     public void SetState(CharacterState newState, int durationKe)
     {
+
         // 如果当前有相同的状态，则取消当前的动作，以新持续时间为准
         if (currentState == newState && currentAction != null)
         {
@@ -149,89 +166,129 @@ public class Character : MonoBehaviour
     {
         if (durationKe <= 0) return; // 确保持续时间为正数
 
+        // 确定移动方向
+        Vector3 direction = dir ? Vector3.left : Vector3.right;
+        float distancePerKe = distance / durationKe; // 每刻移动的距离
+        Vector3 movePerKe = direction * distancePerKe;
+
         int startKe = TimeManager.Instance.currentKe;
         int endKe = startKe + durationKe;
-        Vector3 startPosition = transform.position;
-        Vector3 targetPosition = dir ? startPosition - new Vector3(distance, 0, 0) : startPosition + new Vector3(distance, 0, 0);
-
-        for (int i = 0; i < durationKe; i++)
+        transform.position += movePerKe;
+        // 手动移动每一刻
+        for (int i = 1; i < durationKe; i++)
         {
             int keToExecute = startKe + i;
             ActionScheduler.Instance.ScheduleAction(new ScheduledAction(keToExecute, () =>
             {
-                float t = (float)(TimeManager.Instance.currentKe - startKe) / durationKe;
-                transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+                // 在每个刻时移动一部分距离
+                transform.position += movePerKe;
 
                 // 在最后一刻确保位置精确到达目标点
                 if (TimeManager.Instance.currentKe == endKe)
                 {
+                    Vector3 targetPosition = transform.position + direction * (distancePerKe * (durationKe - i - 1));
                     transform.position = targetPosition;
                 }
             }, this));
         }
     }
-
-    public void ApplyAirborneEffect(float airborneHeight, int airborneTimeKe)
+    public void ApplyAirborneEffect(float airborneHeight, int airborneTimeKe, int downedTime)
     {
+        if (airborneTimeKe <= 0) return; // 确保持续时间为正数
         int startKe = TimeManager.Instance.currentKe;
         int halfAirborneTimeKe = airborneTimeKe / 2;
         int extraKe = airborneTimeKe % 2;
         int peakKe = startKe + halfAirborneTimeKe + extraKe;
         int endKe = startKe + airborneTimeKe;
-        float startY = transform.position.y;
-        float peakY = startY + airborneHeight;
+        float distancePerKeUp = airborneHeight / (halfAirborneTimeKe + extraKe); // 上升阶段每刻的距离
+        float distancePerKeDown = airborneHeight / halfAirborneTimeKe; // 下降阶段每刻的距离
 
+        shouldGoToDowned = true;
+        // 提升浮空优先级，确保新的浮空技具有更高的优先级
+        currentAirbornePriority++;
+        // 使用当前的优先级来控制浮空效果(如果触发新的浮空，这个函数就会失效)
+        int priority = currentAirbornePriority;
+
+        transform.position += new Vector3(0, distancePerKeUp, 0);//先走一步
         // 上升阶段
         for (int i = 0; i < halfAirborneTimeKe + extraKe; i++)
         {
             int keToExecute = startKe + i;
             ActionScheduler.Instance.ScheduleAction(new ScheduledAction(keToExecute, () =>
             {
-                float t = (float)(TimeManager.Instance.currentKe - startKe) / (halfAirborneTimeKe + extraKe);
-                transform.position = new Vector3(transform.position.x, Mathf.Lerp(startY, peakY, t), transform.position.z);
+                // 如果标志位被取消，则不执行浮空效果
+                if (priority < currentAirbornePriority) return;
+
+                transform.position += new Vector3(0, distancePerKeUp, 0);
             }, this));
         }
 
+        transform.position -= new Vector3(0, distancePerKeDown, 0);//先走一步
         // 下降阶段
         for (int i = 0; i < halfAirborneTimeKe; i++)
         {
             int keToExecute = peakKe + i;
             ActionScheduler.Instance.ScheduleAction(new ScheduledAction(keToExecute, () =>
             {
-                float t = (float)(TimeManager.Instance.currentKe - peakKe) / halfAirborneTimeKe;
-                transform.position = new Vector3(transform.position.x, Mathf.Lerp(peakY, groundHeight, t), transform.position.z);
+                // 如果标志位被取消，则不执行下降效果
+                if (priority < currentAirbornePriority) return;
 
-                // 在最后一刻确保位置精确到达地面
-                if (TimeManager.Instance.currentKe == endKe-1)
+                transform.position -= new Vector3(0, distancePerKeDown, 0);
+
+                // 在倒数第二刻确保位置精确到达地面（迫不得已的选项）
+                if (TimeManager.Instance.currentKe == endKe - 1)
                 {
                     Debug.Log("浮空归位");
                     transform.position = new Vector3(transform.position.x, groundHeight, transform.position.z);
+                    launchValue = 0;
                 }
             }, this));
         }
+
+        // 安排倒地效果
+        ActionScheduler.Instance.ScheduleAction(new ScheduledAction(startKe + airborneTimeKe, () =>
+        {
+            // 只有在标志位为 true，且浮空层级匹配时，才进入倒地状态
+            if (shouldGoToDowned && priority == currentAirbornePriority)
+            {
+                SetState(CharacterState.Downed, downedTime); // 倒地效果
+                launchValue = 0; // 重置浮空值
+                currentAirbornePriority = 0; // 重置浮空优先级
+            }
+        }, this));
     }
+
 
     // 施加AirborneAttacked状态时，敌人在硬直时间内返回地面
     public void ApplyAirborneAttackedEffect(int recoveryKe)
     {
+        if (recoveryKe <= 0) return; // 确保持续时间为正数
         int startKe = TimeManager.Instance.currentKe;
         int endKe = startKe + recoveryKe;
-        float startHeight = transform.position.y;
-        float targetHeight = groundHeight;
+        float distancePerKeDown = transform.position.y / recoveryKe; // 每刻下降的距离
 
+        // 提升浮空优先级，确保新的浮空技具有更高的优先级
+        currentAirbornePriority++;
+        int priority = currentAirbornePriority;
+
+        transform.position -= new Vector3(0, distancePerKeDown, 0);//先走一步
+
+        // 下降阶段
         for (int i = 0; i < recoveryKe; i++)
         {
             int keToExecute = startKe + i;
             ActionScheduler.Instance.ScheduleAction(new ScheduledAction(keToExecute, () =>
             {
-                float t = (float)(TimeManager.Instance.currentKe - startKe) / recoveryKe;
-                transform.position = new Vector3(transform.position.x, Mathf.Lerp(startHeight, targetHeight, t), transform.position.z);
+                // 如果标志位被取消，则不执行下降效果
+                if (priority < currentAirbornePriority) return;
 
-                // 在最后一刻确保位置精确到达地面高度
-                if (TimeManager.Instance.currentKe == endKe-1)
+                transform.position -= new Vector3(0, distancePerKeDown, 0);
+
+                // 在倒数第二刻确保位置精确到达地面（迫不得已的选项）
+                if (TimeManager.Instance.currentKe == endKe - 1)
                 {
                     Debug.Log("浮空受击归位");
-                    transform.position = new Vector3(transform.position.x, targetHeight, transform.position.z);
+                    transform.position = new Vector3(transform.position.x, groundHeight, transform.position.z);
                 }
             }, this));
         }
@@ -244,20 +301,16 @@ public class Character : MonoBehaviour
         int endKe = startKe + durationKe;
         Vector3 startPosition = transform.position;
         Vector3 targetPosition = startPosition + new Vector3(moveVector.x, moveVector.y, 0);
+        Vector3 movePerKe = new Vector3(moveVector.x / durationKe, moveVector.y / durationKe, 0);
 
-        for (int i = 0; i < durationKe; i++)
+        transform.position += movePerKe;//先走一步
+        for (int i = 1; i < durationKe; i++)
         {
             int keToExecute = startKe + i;
             ActionScheduler.Instance.ScheduleAction(new ScheduledAction(keToExecute, () =>
             {
-                float t = (float)(TimeManager.Instance.currentKe - startKe) / durationKe;
-                transform.position = Vector3.Lerp(startPosition, targetPosition, t);
-
-                // 在最后一刻确保位置精确到达目标点
-                if (TimeManager.Instance.currentKe == endKe - 1)
-                {
-                    transform.position = targetPosition;
-                }
+                // 在每个刻时移动一部分距离
+                transform.position += movePerKe;
             }, this));
         }
     }
@@ -275,6 +328,7 @@ public enum CharacterState
     Jumping,
     Airborne,
     AirborneAttacked,
+    Downed,
     Thrown,
     MovingBack
 }

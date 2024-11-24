@@ -15,6 +15,7 @@ MonoBehaviour:
   defendingHardness: 5
   airborneTime: 15
   airborneValue: 6
+  downedTime: 10
   launchFirst: 5
   launchNext: 5
   launchMax: 10

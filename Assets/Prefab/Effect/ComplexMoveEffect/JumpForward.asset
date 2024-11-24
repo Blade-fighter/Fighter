@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: JumpForward
   m_EditorClassIdentifier: 
   moveSteps:
-  - moveVector: {x: 4, y: 5}
-    ke: 3
-  - moveVector: {x: 1, y: 1}
-    ke: 3
-  - moveVector: {x: 0, y: -6}
+  - moveVector: {x: 3, y: 3.5}
     ke: 5
+  - moveVector: {x: 6, y: 3.5}
+    ke: 5
+  - moveVector: {x: 0, y: -6}
+    ke: 3
   giveToTarget: 0
   toGround: 1

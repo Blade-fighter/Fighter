@@ -36,7 +36,6 @@ public class ActionScheduler : MonoBehaviour
             }
         }
     }
-
     public ScheduledAction GetScheduledActionForCharacter(Character character)
     {
         foreach (ScheduledAction action in actionQueue)

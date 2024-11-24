@@ -32,14 +32,15 @@ public abstract class CardEffect : ScriptableObject
         else if (target.currentState == CharacterState.Airborne|| target.currentState == CharacterState.Jumping)
         {
             //浮空
-            Debug.Log("浮空技命中空中敌人");
+            Debug.Log("普通技命中空中敌人");
+            target.shouldGoToDowned = false;
             target.SetState(CharacterState.AirborneAttacked, idleHardness); // 命中空中敌人（浮空/跳）
             target.ApplyAirborneAttackedEffect(idleHardness);
         }
     }
 
     //浮空效果
-    public void ApplyAirBorne(Character target, Character attacker, int defendingHardness, int time, float value, int first, int next, int max, MoveEffect moveEffect)//浮空效果
+    public void ApplyAirBorne(Character target, Character attacker, int defendingHardness, int time, float value, int first, int next, int max, MoveEffect moveEffect,int downedTime)//浮空效果
     {
         if (target.currentState == CharacterState.Defending || target.currentState == CharacterState.BlockedStunned)//防住了
         {
@@ -54,25 +55,25 @@ public abstract class CardEffect : ScriptableObject
             {
                 target.launchValue += first;
                 target.SetState(CharacterState.Airborne, time);//普通效果
-                target.ApplyAirborneEffect(value, time);
+                target.ApplyAirborneEffect(value, time,downedTime);
             }
             else if (target.currentState == CharacterState.AttackingStartup || target.currentState == CharacterState.AttackingActive)
             {
                 target.launchValue += first;
                 target.SetState(CharacterState.Airborne, time); // 打康效果
-                target.ApplyAirborneEffect(value, time);
+                target.ApplyAirborneEffect(value, time,downedTime);
             }
             else if (target.currentState == CharacterState.Recovery)
             {
                 target.launchValue += first;
                 target.SetState(CharacterState.Airborne, time); // 确反硬直
-                target.ApplyAirborneEffect(value, time);
+                target.ApplyAirborneEffect(value, time, downedTime);
             }
             else if (target.currentState == CharacterState.Airborne)
             {
                 target.launchValue += next;
                 target.SetState(CharacterState.Airborne, time); // 确反硬直
-                target.ApplyAirborneEffect(value, time);
+                target.ApplyAirborneEffect(value, time, downedTime);
             }
         }
         else
@@ -81,7 +82,7 @@ public abstract class CardEffect : ScriptableObject
         }
     }
         //移动效果
-        public void ApplyMove(Character target,Character attacker,float targetMoveBack, int targetMoveKe, float attackerMove, int attackerMoveKe)
+    public void ApplyMove(Character target,Character attacker,float targetMoveBack, int targetMoveKe, float attackerMove, int attackerMoveKe)
     {
         if (target != null)
         {
@@ -105,7 +106,7 @@ public abstract class CardEffect : ScriptableObject
     {
         if (character != null && moveSteps != null && moveSteps.Count > 0)
         {
-            int startKe = TimeManager.Instance.currentKe;
+            int startKe = TimeManager.Instance.currentKe-1;
             int accumulatedKe = 0;
 
             int totalTime = 0;
@@ -115,20 +116,20 @@ public abstract class CardEffect : ScriptableObject
             }
             if (toGround)
             {
-                ActionScheduler.Instance.ScheduleAction(new ScheduledAction(startKe +totalTime, () =>
+                // 在倒数第二刻确保位置到达地面（迫不得已的选项）
+                ActionScheduler.Instance.ScheduleAction(new ScheduledAction(startKe +totalTime-1, () =>
                 {
-                    //回到地面
                     character.transform.position = new Vector3(character.transform.position.x, 0, character.transform.position.z);
                 }, character));
             }
             foreach (StepMoveData step in moveSteps)
             {
-                accumulatedKe += step.ke;
                 int executeKe = startKe + accumulatedKe;
                 ActionScheduler.Instance.ScheduleAction(new ScheduledAction(executeKe, () =>
                 {
                     character.StepMove(step.moveVector, step.ke);
                 }, character));
+                accumulatedKe += step.ke;
             }
         }
     }
