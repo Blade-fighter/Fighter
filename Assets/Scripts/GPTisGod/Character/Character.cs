@@ -78,6 +78,34 @@ public class Character : MonoBehaviour
         Debug.Log(gameObject.name +"从" +currentState+ "进入" + newState + "时间" + durationKe + "刻");
         currentState = newState;
         canAct = false;
+        switch (newState)//动画状态机控制
+        {
+            case CharacterState.Idle:
+                OneToTrue("isIdle");
+                break;
+            case CharacterState.Defending:
+                OneToTrue("isDefending");
+                break;
+            case CharacterState.Stunned:
+                OneToTrue("isStunned");
+                break;
+            case CharacterState.Airborne:
+                OneToTrue("isAirborne");
+                break;
+            case CharacterState.AirborneAttacked:
+                OneToTrue("isAirborneAttacked");
+                break;
+            case CharacterState.Downed:
+                OneToTrue("isDowned");
+                break;
+            case CharacterState.Thrown:
+                OneToTrue("isThrown");
+                break;
+            // 添加其他状态的逻辑
+            default:
+                OneToTrue(null);
+                break;
+        }
 
         // 创建新的调度动作
         currentAction = new ScheduledAction(TimeManager.Instance.currentKe + durationKe, () =>
@@ -86,6 +114,7 @@ public class Character : MonoBehaviour
             {
                 currentState = CharacterState.Idle;
                 canAct = true;
+                OneToTrue("isIdle");
                 if (newState == CharacterState.Airborne)
                 {
                     launchValue = 0; // 重置浮空值
@@ -95,7 +124,18 @@ public class Character : MonoBehaviour
 
         ActionScheduler.Instance.ScheduleAction(currentAction);
     }
-
+    public void OneToTrue(string name)//动画机里取一个为true其他为false
+    {
+        animator.SetBool("isIdle", false);
+        animator.SetBool("isDefending", false);
+        animator.SetBool("isStunned", false);
+        animator.SetBool("isAirborne", false);
+        animator.SetBool("isAirborneAttacked", false);
+        animator.SetBool("isDowned", false);
+        animator.SetBool("isThrown", false);
+        if(name!=null)
+        animator.SetBool(name, true);
+    }
     public void TakeDamage(int damage)
     {
         Debug.Log(cName + " took " + damage + " damage.");
