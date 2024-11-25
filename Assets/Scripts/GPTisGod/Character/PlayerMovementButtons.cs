@@ -42,9 +42,22 @@ public class PlayerMovementButtons : MonoBehaviour
 
             ResumeTime(); // 确保时间流动，以使 currentKe 继续更新
 
+            //动画逻辑
+            if ((playerCharacter.dir&&distance<0)||(!playerCharacter.dir && distance > 0))
+            {
+                playerCharacter.animator.SetTrigger("Front");
+            }
+            else
+            {
+                playerCharacter.animator.SetTrigger("Back");
+            }
+
             // 在移动完成后启用按钮和卡牌
             ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + moveDurationKe, () =>
             {
+                playerCharacter.animator.SetTrigger("Idle");//回到Idle
+                playerCharacter.animator.ResetTrigger("Back");
+                playerCharacter.animator.ResetTrigger("Front");
                 leftMoveButton.interactable = true;
                 rightMoveButton.interactable = true;
                 CardUI.isCardEffectActive = false;

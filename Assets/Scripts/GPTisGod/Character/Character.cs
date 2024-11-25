@@ -26,10 +26,11 @@ public class Character : MonoBehaviour
     public int currentAirbornePriority = 0;//多个浮空招式连续命中时，用于判断是否倒地的值
 
     public Animator animator;
-
+    public CharacterAnimation cAnim;
     private void Start()
     {
         animator =  transform.GetChild(0).GetComponent<Animator>();
+        cAnim = GetComponent<CharacterAnimation>();
     }
     private void Update()
     {
@@ -78,34 +79,7 @@ public class Character : MonoBehaviour
         Debug.Log(gameObject.name +"从" +currentState+ "进入" + newState + "时间" + durationKe + "刻");
         currentState = newState;
         canAct = false;
-        switch (newState)//动画状态机控制
-        {
-            case CharacterState.Idle:
-                OneToTrue("isIdle");
-                break;
-            case CharacterState.Defending:
-                OneToTrue("isDefending");
-                break;
-            case CharacterState.Stunned:
-                OneToTrue("isStunned");
-                break;
-            case CharacterState.Airborne:
-                OneToTrue("isAirborne");
-                break;
-            case CharacterState.AirborneAttacked:
-                OneToTrue("isAirborneAttacked");
-                break;
-            case CharacterState.Downed:
-                OneToTrue("isDowned");
-                break;
-            case CharacterState.Thrown:
-                OneToTrue("isThrown");
-                break;
-            // 添加其他状态的逻辑
-            default:
-                OneToTrue(null);
-                break;
-        }
+        cAnim.BasicAnimationController(newState);//动画
 
         // 创建新的调度动作
         currentAction = new ScheduledAction(TimeManager.Instance.currentKe + durationKe, () =>
@@ -114,7 +88,7 @@ public class Character : MonoBehaviour
             {
                 currentState = CharacterState.Idle;
                 canAct = true;
-                OneToTrue("isIdle");
+                cAnim.BasicAnimationController(CharacterState.Idle);//动画
                 if (newState == CharacterState.Airborne)
                 {
                     launchValue = 0; // 重置浮空值
@@ -123,18 +97,6 @@ public class Character : MonoBehaviour
         }, this);
 
         ActionScheduler.Instance.ScheduleAction(currentAction);
-    }
-    public void OneToTrue(string name)//动画机里取一个为true其他为false
-    {
-        animator.SetBool("isIdle", false);
-        animator.SetBool("isDefending", false);
-        animator.SetBool("isStunned", false);
-        animator.SetBool("isAirborne", false);
-        animator.SetBool("isAirborneAttacked", false);
-        animator.SetBool("isDowned", false);
-        animator.SetBool("isThrown", false);
-        if(name!=null)
-        animator.SetBool(name, true);
     }
     public void TakeDamage(int damage)
     {
@@ -241,7 +203,7 @@ public class Character : MonoBehaviour
         int peakKe = startKe + halfAirborneTimeKe + extraKe;
         int endKe = startKe + airborneTimeKe;
         float distancePerKeUp = airborneHeight / (halfAirborneTimeKe + extraKe); // 上升阶段每刻的距离
-        float distancePerKeDown = airborneHeight / halfAirborneTimeKe; // 下降阶段每刻的距离
+        float distancePerKeDown = (airborneHeight+transform.position.y-groundHeight) / halfAirborneTimeKe; // 下降阶段每刻的距离
 
         shouldGoToDowned = true;
         // 提升浮空优先级，确保新的浮空技具有更高的优先级
@@ -276,7 +238,7 @@ public class Character : MonoBehaviour
                 transform.position -= new Vector3(0, distancePerKeDown, 0);
 
                 // 在倒数第二刻确保位置精确到达地面（迫不得已的选项）
-                if (TimeManager.Instance.currentKe == endKe - 1)
+                if (TimeManager.Instance.currentKe == endKe-1)
                 {
                     Debug.Log("浮空归位");
                     transform.position = new Vector3(transform.position.x, groundHeight, transform.position.z);
@@ -340,7 +302,15 @@ public class Character : MonoBehaviour
         int startKe = TimeManager.Instance.currentKe;
         int endKe = startKe + durationKe;
         Vector3 startPosition = transform.position;
-        Vector3 targetPosition = startPosition + new Vector3(moveVector.x, moveVector.y, 0);
+        Vector3 targetPosition = Vector3.zero;
+        if (dir)
+        {
+            targetPosition = startPosition + new Vector3(-moveVector.x, moveVector.y, 0);
+        }
+        else
+        {
+            targetPosition = startPosition + new Vector3(moveVector.x, moveVector.y, 0);
+        }
         Vector3 movePerKe = new Vector3(moveVector.x / durationKe, moveVector.y / durationKe, 0);
 
         transform.position += movePerKe;//先走一步

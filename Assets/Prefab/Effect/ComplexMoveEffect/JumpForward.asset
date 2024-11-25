@@ -17,7 +17,7 @@ MonoBehaviour:
     ke: 5
   - moveVector: {x: 6, y: 3.5}
     ke: 5
-  - moveVector: {x: 0, y: -6}
+  - moveVector: {x: 0, y: -7}
     ke: 3
   giveToTarget: 0
-  toGround: 1
+  toGround: 0

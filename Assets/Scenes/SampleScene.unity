@@ -808,6 +808,7 @@ GameObject:
   - component: {fileID: 400631001}
   - component: {fileID: 400631000}
   - component: {fileID: 400631004}
+  - component: {fileID: 400631005}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -929,6 +930,34 @@ MonoBehaviour:
   shouldGoToDowned: 1
   currentAirbornePriority: 0
   animator: {fileID: 0}
+  cAnim: {fileID: 0}
+--- !u!114 &400631005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400630999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e6677d7c28dbda4fbd9f02675565f85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cName: 
+  currentState: 0
+  hitCollider: {fileID: 0}
+  attackCollider: {fileID: 0}
+  canAct: 0
+  deck: {fileID: 0}
+  dir: 0
+  leftBoundary: -19
+  rightBoundary: 19
+  launchValue: 0
+  groundHeight: 0
+  shouldGoToDowned: 1
+  currentAirbornePriority: 0
+  animator: {fileID: 0}
+  cAnim: {fileID: 0}
 --- !u!1 &406560795
 GameObject:
   m_ObjectHideFlags: 0
@@ -1473,6 +1502,7 @@ GameObject:
   - component: {fileID: 970601143}
   - component: {fileID: 970601142}
   - component: {fileID: 970601147}
+  - component: {fileID: 970601148}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -1594,6 +1624,34 @@ MonoBehaviour:
   shouldGoToDowned: 1
   currentAirbornePriority: 0
   animator: {fileID: 0}
+  cAnim: {fileID: 0}
+--- !u!114 &970601148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 970601141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e6677d7c28dbda4fbd9f02675565f85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cName: 
+  currentState: 0
+  hitCollider: {fileID: 0}
+  attackCollider: {fileID: 0}
+  canAct: 0
+  deck: {fileID: 0}
+  dir: 0
+  leftBoundary: -19
+  rightBoundary: 19
+  launchValue: 0
+  groundHeight: 0
+  shouldGoToDowned: 1
+  currentAirbornePriority: 0
+  animator: {fileID: 0}
+  cAnim: {fileID: 0}
 --- !u!1 &1017626624
 GameObject:
   m_ObjectHideFlags: 0
