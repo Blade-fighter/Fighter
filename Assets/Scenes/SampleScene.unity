@@ -943,21 +943,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e6677d7c28dbda4fbd9f02675565f85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cName: 
-  currentState: 0
-  hitCollider: {fileID: 0}
-  attackCollider: {fileID: 0}
-  canAct: 0
-  deck: {fileID: 0}
-  dir: 0
-  leftBoundary: -19
-  rightBoundary: 19
-  launchValue: 0
-  groundHeight: 0
-  shouldGoToDowned: 1
-  currentAirbornePriority: 0
-  animator: {fileID: 0}
-  cAnim: {fileID: 0}
+  character: {fileID: 0}
 --- !u!1 &406560795
 GameObject:
   m_ObjectHideFlags: 0
@@ -1637,21 +1623,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e6677d7c28dbda4fbd9f02675565f85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cName: 
-  currentState: 0
-  hitCollider: {fileID: 0}
-  attackCollider: {fileID: 0}
-  canAct: 0
-  deck: {fileID: 0}
-  dir: 0
-  leftBoundary: -19
-  rightBoundary: 19
-  launchValue: 0
-  groundHeight: 0
-  shouldGoToDowned: 1
-  currentAirbornePriority: 0
-  animator: {fileID: 0}
-  cAnim: {fileID: 0}
+  character: {fileID: 0}
 --- !u!1 &1017626624
 GameObject:
   m_ObjectHideFlags: 0
@@ -2414,13 +2386,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b1629cba405f6924299d4c15f591373d, type: 2}
   - {fileID: 11400000, guid: b1629cba405f6924299d4c15f591373d, type: 2}
   - {fileID: 11400000, guid: b1629cba405f6924299d4c15f591373d, type: 2}
-  - {fileID: 11400000, guid: b1629cba405f6924299d4c15f591373d, type: 2}
   - {fileID: 11400000, guid: 0b52c5cc5abf1584f9d478f3a0acb3ac, type: 2}
   - {fileID: 11400000, guid: 0b52c5cc5abf1584f9d478f3a0acb3ac, type: 2}
   - {fileID: 11400000, guid: 49098d5bb6f3acf47818583227ed2f1f, type: 2}
   - {fileID: 11400000, guid: 49098d5bb6f3acf47818583227ed2f1f, type: 2}
-  - {fileID: 11400000, guid: 870d5ee251657f34c849658044fdff58, type: 2}
   - {fileID: 11400000, guid: 93e1bb1b7a603bd47854042e2aa84744, type: 2}
+  - {fileID: 11400000, guid: 870d5ee251657f34c849658044fdff58, type: 2}
+  - {fileID: 11400000, guid: 870d5ee251657f34c849658044fdff58, type: 2}
   drawPile: []
   discardPile: []
   hand: []
@@ -3147,7 +3119,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -360.00003}
+  m_AnchoredPosition: {x: 0, y: -360}
   m_SizeDelta: {x: 0, y: -720}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1882290083
@@ -3383,7 +3355,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -650, y: -360.00003}
+  m_AnchoredPosition: {x: -650, y: -360}
   m_SizeDelta: {x: -1500, y: -980}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2003063693

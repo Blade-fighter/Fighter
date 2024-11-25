@@ -3,6 +3,8 @@ using UnityEngine;
 using System.Collections;
 using static UnityEngine.GraphicsBuffer;
 using Unity.VisualScripting;
+using System;
+using UnityEditor.Experimental.GraphView;
 
 public class Character : MonoBehaviour
 {
@@ -76,7 +78,7 @@ public class Character : MonoBehaviour
         {
             currentAction.Cancel();
         }
-        Debug.Log(gameObject.name +"从" +currentState+ "进入" + newState + "时间" + durationKe + "刻");
+        //Debug.Log(gameObject.name +"从" +currentState+ "进入" + newState + "时间" + durationKe + "刻");
         currentState = newState;
         canAct = false;
         cAnim.BasicAnimationController(newState);//动画
@@ -84,20 +86,21 @@ public class Character : MonoBehaviour
         // 创建新的调度动作
         currentAction = new ScheduledAction(TimeManager.Instance.currentKe + durationKe, () =>
         {
-            if (currentState == newState)
+            if (currentState == newState&&currentState!=CharacterState.AttackingActive && currentState != CharacterState.AttackingStartup)
             {
-                currentState = CharacterState.Idle;
+                if (currentState == CharacterState.Stunned || currentState == CharacterState.Downed || currentState == CharacterState.BlockedStunned || currentState == CharacterState.Thrown)
+                    cAnim.BasicAnimationController(CharacterState.Idle);//不为按钮和卡牌触发的效果在这里恢复Idle
+                if(currentState!=CharacterState.Airborne)//排除项，否则会影响倒地效果
+                    currentState = CharacterState.Idle;
                 canAct = true;
-                cAnim.BasicAnimationController(CharacterState.Idle);//动画
                 if (newState == CharacterState.Airborne)
-                {
                     launchValue = 0; // 重置浮空值
-                }
             }
         }, this);
 
         ActionScheduler.Instance.ScheduleAction(currentAction);
     }
+
     public void TakeDamage(int damage)
     {
         Debug.Log(cName + " took " + damage + " damage.");
@@ -114,7 +117,7 @@ public class Character : MonoBehaviour
     {
         // 处理角色后退的逻辑
         MoveOverTime(-distance, durationKe);
-        Debug.Log(cName + "后退" + distance + "距离，时间" +durationKe +"刻");
+        //Debug.Log(cName + "后退" + distance + "距离，时间" +durationKe +"刻");
     }
 
     // 检查角色是否在版边
@@ -240,7 +243,7 @@ public class Character : MonoBehaviour
                 // 在倒数第二刻确保位置精确到达地面（迫不得已的选项）
                 if (TimeManager.Instance.currentKe == endKe-1)
                 {
-                    Debug.Log("浮空归位");
+                    //Debug.Log("浮空归位");
                     transform.position = new Vector3(transform.position.x, groundHeight, transform.position.z);
                     launchValue = 0;
                 }
@@ -340,5 +343,6 @@ public enum CharacterState
     AirborneAttacked,
     Downed,
     Thrown,
+    MovingFront,
     MovingBack
 }

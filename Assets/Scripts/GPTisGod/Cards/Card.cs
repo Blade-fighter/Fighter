@@ -75,7 +75,7 @@ public class Card
         {
             character.SetState(CharacterState.Idle, 0);
             TimeManager.Instance.PauseGame(); // 玩家恢复为 Idle 状态后暂停游戏
-
+            character.animator.SetInteger("AttackIndex", 0);//重置招式index
             // 通知 CardUI 卡牌效果已完成
             CardUI.CardEffectComplete();
         }, character));
@@ -116,7 +116,7 @@ public class Card
             {
                 if (activeCollider != null && activeCollider.GetComponent<AttackCollider>().hit)
                 {
-                    Debug.Log("招式打中了: " + target.gameObject.name);
+                    //Debug.Log("招式打中了: " + target.gameObject.name);
                     foreach (CardEffect effect in hitEffect)
                     {
                         effect?.Trigger(target, attacker);
@@ -139,7 +139,7 @@ public class Card
                 //收招时再判定一次
                 if (activeCollider.GetComponent<AttackCollider>().hit)
                 {
-                    Debug.Log("招式打中了: " + target.gameObject.name);
+                    //Debug.Log("招式打中了: " + target.gameObject.name);
                     foreach (CardEffect effect in hitEffect)
                     {
                         effect?.Trigger(target, attacker);
@@ -148,7 +148,7 @@ public class Card
                     GameObject.Destroy(activeCollider);
                     activeCollider = null;
                 }
-                Debug.Log(TimeManager.Instance.currentKe + "刻时候" + activeCollider + "销毁了");
+                //Debug.Log(TimeManager.Instance.currentKe + "刻时候" + activeCollider + "销毁了");
                 GameObject.Destroy(activeCollider);
             }
         }, attacker));
@@ -158,7 +158,7 @@ public class Card
         {
             attacker.SetState(CharacterState.Idle, 0);
             TimeManager.Instance.PauseGame(); // 玩家恢复为 Idle 状态后暂停游戏
-
+            attacker.animator.SetInteger("AttackIndex", 0);//重置招式index
             // 通知 CardUI 卡牌效果已完成
             CardUI.CardEffectComplete();
         }, attacker));
@@ -178,7 +178,7 @@ public class Card
                 {
                     attacker.SetState(CharacterState.Idle, 0);
                     TimeManager.Instance.PauseGame(); // 玩家恢复为 Idle 状态后暂停游戏
-
+                    attacker.animator.SetInteger("AttackIndex", 0);//重置招式index
                     // 通知 CardUI 卡牌效果已完成
                     CardUI.CardEffectComplete();
                 }, attacker));
@@ -207,7 +207,7 @@ public class Card
                 {
                     if (activeCollider != null && activeCollider.GetComponent<AttackCollider>().hit)
                     {
-                        Debug.Log("第" + (currentHitIndex + 1) + "段攻击命中: " + target.gameObject.name);
+                        //Debug.Log("第" + (currentHitIndex + 1) + "段攻击命中: " + target.gameObject.name);
                         foreach (CardEffect effect in currentHit.hitEffects)
                         {
                             effect?.Trigger(target, attacker);

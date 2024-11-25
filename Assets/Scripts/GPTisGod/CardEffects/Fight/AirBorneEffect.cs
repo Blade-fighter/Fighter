@@ -20,6 +20,9 @@ public class AirBorneEffect : CardEffect
     
     public override void Trigger(Character target, Character attacker)
     {
-        ApplyAirBorne(target, attacker, defendingHardness, airborneTime, airborneValue, launchFirst, launchNext, launchMax, targetMoveEffect,downedTime);
+        if (target.currentState != CharacterState.AirborneAttacked || target.currentState != CharacterState.Downed)//无法命中的状态
+        {
+            ApplyAirBorne(target, attacker, defendingHardness, airborneTime, airborneValue, launchFirst, launchNext, launchMax, targetMoveEffect, downedTime);
+        }
     }
 }

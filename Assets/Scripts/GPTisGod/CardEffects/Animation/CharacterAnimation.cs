@@ -20,6 +20,7 @@ public class CharacterAnimation : MonoBehaviour
                 character.animator.SetTrigger("Idle");
                 break;
             case CharacterState.Defending:
+            case CharacterState.BlockedStunned:
                 character.animator.SetTrigger("Defend");
                 break;
             case CharacterState.Stunned:
@@ -37,7 +38,19 @@ public class CharacterAnimation : MonoBehaviour
             case CharacterState.Thrown:
                 character.animator.SetTrigger("Thrown");
                 break;
+            case CharacterState.MovingFront:
+                character.animator.SetTrigger("MovingFront");
+                break;
+            case CharacterState.MovingBack:
+                character.animator.SetTrigger("MovingBack");
+                break;
+            case CharacterState.AttackingStartup:
+            case CharacterState.AttackingActive:
+            case CharacterState.Recovery:
+                character.animator.SetTrigger("Attack");
+                break;
             // 添加其他状态的逻辑
+            case CharacterState.Jumping:
             default:
                 character.animator.SetTrigger("Idle");
                 break;
@@ -84,7 +97,7 @@ public class CharacterAnimation : MonoBehaviour
         if (name != null)
         character.animator.SetBool(name, true);
     }
-    void ResetAllTrigger()//重置所有trigger
+    public void ResetAllTrigger()//重置所有trigger
     {
         character.animator.ResetTrigger("Idle");
         character.animator.ResetTrigger("Defend");
@@ -95,6 +108,9 @@ public class CharacterAnimation : MonoBehaviour
         character.animator.ResetTrigger("Stun1"); 
         character.animator.ResetTrigger("Stun2"); 
         character.animator.ResetTrigger("Stun3");
+        character.animator.ResetTrigger("MovingBack");
+        character.animator.ResetTrigger("MovingFront");
+        character.animator.ResetTrigger("Attack");
     }
     // 顺序播放受击动画
     public void PlayNextHitAnimation()

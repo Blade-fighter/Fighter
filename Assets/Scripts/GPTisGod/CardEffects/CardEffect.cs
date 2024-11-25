@@ -17,7 +17,7 @@ public abstract class CardEffect : ScriptableObject
         {
             target.SetState(CharacterState.BlockedStunned, defendingHardness); // 防御硬直
         }
-        else if (target.currentState == CharacterState.Idle || target.currentState == CharacterState.Stunned)
+        else if (target.currentState == CharacterState.Idle || target.currentState == CharacterState.Stunned || target.currentState == CharacterState.MovingFront || target.currentState == CharacterState.MovingBack)
         {
             target.SetState(CharacterState.Stunned, idleHardness); // 受击硬直
         }
@@ -51,7 +51,7 @@ public abstract class CardEffect : ScriptableObject
         {
             //此处缺少浮空的具体效果
 
-            if (target.currentState == CharacterState.Idle || target.currentState == CharacterState.Stunned)
+            if (target.currentState == CharacterState.Idle ||target.currentState == CharacterState.Stunned || target.currentState == CharacterState.MovingFront || target.currentState == CharacterState.MovingBack)
             {
                 target.launchValue += first;
                 target.SetState(CharacterState.Airborne, time);//普通效果

@@ -12,7 +12,7 @@ public class HardnessEffect : CardEffect//硬直效果
     public MoveEffect moveEffect;
     public override void Trigger(Character target, Character attacker)
     {
-        if (target.currentState != CharacterState.AirborneAttacked)//无法命中的状态
+        if (target.currentState != CharacterState.AirborneAttacked|| target.currentState != CharacterState.Downed)//无法命中的状态
         {
             ApplyHardness(target, idleHardness, defendingHardness, attackInterruptedHardness, recoveryPunishHardness);
             ApplyMove(target, attacker, moveEffect.targetMoveBack, moveEffect.targetMoveKe, 0, 0);

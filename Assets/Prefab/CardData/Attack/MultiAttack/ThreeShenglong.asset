@@ -19,15 +19,17 @@ MonoBehaviour:
   startupKe: 0
   activeKe: 0
   recoveryKe: 9
+  collider: {fileID: 0}
+  clip: {fileID: 0}
   startEffect: []
   hitEffect: []
-  collider: {fileID: 0}
   multiHitData:
   - startupKe: 3
     activeKe: 1
     damage: 1
     attackColliderPrefab: {fileID: 8131462454603034921, guid: 371c9b6f8d532cc4d99051eb4993f080, type: 3}
-    startEffects: []
+    startEffects:
+    - {fileID: 11400000, guid: 640cc8b1e1343f54a99f4ebc601ccce2, type: 2}
     hitEffects:
     - {fileID: 11400000, guid: eae7764f3437697489ff2d2106a042db, type: 2}
   - startupKe: 12
