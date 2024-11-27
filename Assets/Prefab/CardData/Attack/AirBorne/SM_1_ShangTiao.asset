@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c254cb39ce4b8734ea96a03808da0075, type: 3}
-  m_Name: ADShenglong
+  m_Name: SM_1_ShangTiao
   m_EditorClassIdentifier: 
   cardName: "\u5347\u9F99"
   cardType: 2
@@ -19,9 +19,9 @@ MonoBehaviour:
   startupKe: 3
   activeKe: 2
   recoveryKe: 9
-  collider: {fileID: 103070142021982681, guid: 371c9b6f8d532cc4d99051eb4993f080, type: 3}
-  clip: {fileID: 0}
-  startEffect: []
+  collider: {fileID: 3039295978303673616, guid: da1ef2ee4c305da4ab42b85580888fca, type: 3}
+  startEffect:
+  - {fileID: 11400000, guid: 2c8222178ad86304483e682ac4006ed5, type: 2}
   hitEffect:
   - {fileID: 11400000, guid: eae7764f3437697489ff2d2106a042db, type: 2}
   multiHitData: []

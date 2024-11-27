@@ -19,30 +19,31 @@ MonoBehaviour:
   startupKe: 0
   activeKe: 0
   recoveryKe: 9
-  collider: {fileID: 0}
-  clip: {fileID: 0}
+  collider: {fileID: 3039295978303673616, guid: da1ef2ee4c305da4ab42b85580888fca, type: 3}
   startEffect: []
   hitEffect: []
   multiHitData:
   - startupKe: 3
     activeKe: 1
     damage: 1
-    attackColliderPrefab: {fileID: 8131462454603034921, guid: 371c9b6f8d532cc4d99051eb4993f080, type: 3}
+    attackColliderPrefab: {fileID: 9043085531773754150, guid: da1ef2ee4c305da4ab42b85580888fca, type: 3}
     startEffects:
-    - {fileID: 11400000, guid: 640cc8b1e1343f54a99f4ebc601ccce2, type: 2}
+    - {fileID: 11400000, guid: 2c8222178ad86304483e682ac4006ed5, type: 2}
     hitEffects:
     - {fileID: 11400000, guid: eae7764f3437697489ff2d2106a042db, type: 2}
   - startupKe: 12
     activeKe: 1
     damage: 1
-    attackColliderPrefab: {fileID: 8131462454603034921, guid: 371c9b6f8d532cc4d99051eb4993f080, type: 3}
-    startEffects: []
+    attackColliderPrefab: {fileID: 9043085531773754150, guid: da1ef2ee4c305da4ab42b85580888fca, type: 3}
+    startEffects:
+    - {fileID: 11400000, guid: 2c8222178ad86304483e682ac4006ed5, type: 2}
     hitEffects:
     - {fileID: 11400000, guid: eae7764f3437697489ff2d2106a042db, type: 2}
   - startupKe: 12
     activeKe: 1
     damage: 1
-    attackColliderPrefab: {fileID: 8131462454603034921, guid: 371c9b6f8d532cc4d99051eb4993f080, type: 3}
-    startEffects: []
+    attackColliderPrefab: {fileID: 9043085531773754150, guid: da1ef2ee4c305da4ab42b85580888fca, type: 3}
+    startEffects:
+    - {fileID: 11400000, guid: 2c8222178ad86304483e682ac4006ed5, type: 2}
     hitEffects:
     - {fileID: 11400000, guid: eae7764f3437697489ff2d2106a042db, type: 2}

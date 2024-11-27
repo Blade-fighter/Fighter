@@ -19,10 +19,10 @@ MonoBehaviour:
   startupKe: 1
   activeKe: 1
   recoveryKe: 2
-  collider: {fileID: 103070142021982681, guid: 371c9b6f8d532cc4d99051eb4993f080, type: 3}
-  clip: {fileID: 0}
+  collider: {fileID: 6274923842116605557, guid: 6fa48e12166ff30469aae372b6d1dc67, type: 3}
   startEffect:
   - {fileID: 11400000, guid: beb0ebe14345dc04aab729f97bd66000, type: 2}
+  - {fileID: 11400000, guid: 4ff83a9edd4934d4b924bf5529684833, type: 2}
   hitEffect:
   - {fileID: 11400000, guid: d85326e427dee124087f9ffe3afce6e9, type: 2}
   multiHitData: []
