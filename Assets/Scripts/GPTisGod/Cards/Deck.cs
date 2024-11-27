@@ -13,7 +13,7 @@ public class Deck : MonoBehaviour
     public Transform handPanel; // 用于显示手牌的 UI 面板
     public float maxCardSpacing = 100f; // 卡牌之间的最大间隔
     public float maxHandWidth = 600f; // 手牌的最大占用宽度
-    public float leftSpace=0f;//手牌最左侧的位置
+    public float leftSpace=-250f;//手牌最左侧的位置
 
     void Start()
     {
@@ -120,7 +120,7 @@ public class Deck : MonoBehaviour
             CardData card = hand[i];
             GameObject cardUI = Instantiate(cardUIPrefab, handPanel);
             RectTransform cardRect = cardUI.GetComponent<RectTransform>();
-            cardRect.anchoredPosition = new Vector2(leftSpace+i * cardSpacing, 0); // 设置卡牌的位置，按顺序排列
+            cardRect.anchoredPosition = new Vector2(leftSpace+i * cardSpacing, -375); // 设置卡牌的位置，按顺序排列
 
             // 设置卡牌的层级，确保后生成的卡牌在前一张之上
             cardUI.transform.SetSiblingIndex(i);

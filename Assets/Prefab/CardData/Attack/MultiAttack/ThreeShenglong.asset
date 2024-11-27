@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c254cb39ce4b8734ea96a03808da0075, type: 3}
   m_Name: ThreeShenglong
   m_EditorClassIdentifier: 
-  cardName: threeshenglong
+  cardName: "\u4E09\u8FDE\u5347\u9F99"
   cardType: 3
   cardDescription: gumingsiyi
   cardImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}

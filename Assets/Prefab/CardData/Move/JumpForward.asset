@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c254cb39ce4b8734ea96a03808da0075, type: 3}
   m_Name: JumpForward
   m_EditorClassIdentifier: 
-  cardName: 
+  cardName: "\u524D\u8DF3"
   cardType: 4
   cardDescription: 
   cardImage: {fileID: 0}
   startupKe: 11
   activeKe: 0
   recoveryKe: 0
+  collider: {fileID: 0}
+  clip: {fileID: 0}
   startEffect:
   - {fileID: 11400000, guid: aae5e6f8c21d4b842869f62a907f99b6, type: 2}
   hitEffect: []
-  collider: {fileID: 0}
   multiHitData: []

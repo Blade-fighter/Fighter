@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c254cb39ce4b8734ea96a03808da0075, type: 3}
   m_Name: LightPunch
   m_EditorClassIdentifier: 
-  cardName: LightPunch
+  cardName: "\u8F7B\u653B\u51FB"
   cardType: 0
   cardDescription: putongyiquan
   cardImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}

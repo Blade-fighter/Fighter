@@ -31,7 +31,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     public void UpdateCardVisual()
     {
         // ¸üÐÂ¿¨ÅÆÃû³Æ
-        Text nameText = transform.GetChild(0).GetComponent<Text>();
+        Text nameText = transform.GetChild(3).GetComponent<Text>();
         if (nameText != null)
         {
             nameText.text = cardData.cardName;
@@ -40,13 +40,13 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
         Text desText = transform.GetChild(1).GetComponent<Text>();
         if (desText != null)
         {
-            desText.text = cardData.cardDescription;
+            //desText.text = cardData.cardDescription;
         }
         //Í¼Æ¬
-        Image cardImage = transform.GetChild(3).GetComponent<Image>();
+        Image cardImage = transform.GetChild(0).GetComponent<Image>();
         if (cardImage != null && cardData.cardImage != null)
         {
-            cardImage.sprite = cardData.cardImage;
+            //cardImage.sprite = cardData.cardImage;
         }
     }
 
