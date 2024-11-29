@@ -29,6 +29,17 @@ public class Character : MonoBehaviour
 
     public Animator animator;
     public CharacterAnimation cAnim;
+
+    public float maxHealth = 100;
+    public float currentHealth = 100;
+
+    public float currentGuardValue = 50;
+    public float maxGuardValue = 50;
+
+    public int currentSuperCount = 0;
+    public int maxSuperCount = 3;
+    public float currentSuperValue = 0;
+    public float maxSuperValue = 50;
     private void Start()
     {
         animator =  transform.GetChild(0).GetComponent<Animator>();
@@ -325,6 +336,42 @@ public class Character : MonoBehaviour
                 // 在每个刻时移动一部分距离
                 transform.position += movePerKe;
             }, this));
+        }
+    }
+
+    // 破防条逻辑 - 增加破防值
+    public void IncreaseGuardBreakValue(int value)
+    {
+        currentGuardValue += value;
+        if (currentGuardValue >= 50)
+        {
+            currentGuardValue = 0;
+            SetState(CharacterState.Stunned,20); // 进入眩晕状态
+        }
+    }
+
+    // 超必杀条逻辑 - 增加超必杀数值
+    public void IncreaseSuperMeterValue(int value)
+    {
+        currentSuperValue += value;
+        if (currentSuperValue >= 50)
+        {
+            currentSuperValue -= 50;
+            currentSuperCount++;
+
+            if (currentSuperCount > 3)
+            {
+                currentSuperCount = 3; // 超必杀条数上限为 3
+            }
+        }
+    }
+
+    // 消耗超必杀条
+    public void UseSuperMeter(int count)
+    {
+        if (currentSuperCount >= count)
+        {
+            currentSuperCount -= count;
         }
     }
 }
