@@ -20,3 +20,6 @@ MonoBehaviour:
   launchNext: 5
   launchMax: 10
   targetMoveEffect: {fileID: 11400000, guid: 1894e4394a383fc4f8374497573331e2, type: 2}
+  damage: 10
+  defenseDecrease: 5
+  superIncrease: 10

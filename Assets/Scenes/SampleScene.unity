@@ -1193,8 +1193,8 @@ MonoBehaviour:
   cAnim: {fileID: 0}
   maxHealth: 100
   currentHealth: 100
-  currentGuardValue: 50
-  maxGuardValue: 50
+  currentDefenseValue: 50
+  maxDefenseValue: 50
   currentSuperCount: 0
   maxSuperCount: 3
   currentSuperValue: 0
@@ -1827,10 +1827,10 @@ MonoBehaviour:
   PlayerHealth: {fileID: 683482867}
   EnemyHealthBar: {fileID: 1840140013}
   EnemyHealth: {fileID: 990207693}
-  PlayerGuardBar: {fileID: 2024558512}
-  PlayerGuard: {fileID: 400955134}
-  EnemyGuardBar: {fileID: 1480455755}
-  EnemyGuard: {fileID: 153314375}
+  PlayerDefenseBar: {fileID: 2024558512}
+  PlayerDefense: {fileID: 400955134}
+  EnemyDefenseBar: {fileID: 1480455755}
+  EnemyDefense: {fileID: 153314375}
   PlayerSuperBar: {fileID: 861883943}
   PlayerSuperNum: {fileID: 1730547174}
   PlayerSuperText: {fileID: 2127996021}
@@ -2529,8 +2529,8 @@ MonoBehaviour:
   cAnim: {fileID: 0}
   maxHealth: 100
   currentHealth: 100
-  currentGuardValue: 50
-  maxGuardValue: 50
+  currentDefenseValue: 50
+  maxDefenseValue: 50
   currentSuperCount: 0
   maxSuperCount: 3
   currentSuperValue: 0

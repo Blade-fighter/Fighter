@@ -33,8 +33,8 @@ public class Character : MonoBehaviour
     public float maxHealth = 100;
     public float currentHealth = 100;
 
-    public float currentGuardValue = 50;
-    public float maxGuardValue = 50;
+    public float currentDefenseValue = 50;
+    public float maxDefenseValue = 50;
 
     public int currentSuperCount = 0;
     public int maxSuperCount = 3;
@@ -110,18 +110,6 @@ public class Character : MonoBehaviour
         }, this);
 
         ActionScheduler.Instance.ScheduleAction(currentAction);
-    }
-
-    public void TakeDamage(int damage)
-    {
-        Debug.Log(cName + " took " + damage + " damage.");
-        // 处理生命值减少的逻辑
-    }
-
-    public void Heal(int amount)
-    {
-        Debug.Log(cName + " healed " + amount + " health.");
-        // 处理生命值增加的逻辑
     }
 
     public void MoveBack(float distance,int durationKe)
@@ -338,30 +326,43 @@ public class Character : MonoBehaviour
             }, this));
         }
     }
-
-    // 破防条逻辑 - 增加破防值
-    public void IncreaseGuardBreakValue(int value)
+    public void TakeDamage(float damage)
     {
-        currentGuardValue += value;
-        if (currentGuardValue >= 50)
+        currentHealth -= damage;
+    }
+
+    public void Heal(float amount)
+    {
+        currentHealth += amount;
+        if(currentHealth>maxHealth)
+            currentHealth = maxHealth;
+    }
+
+    // 破防条逻辑 - 减少值
+    public void DecreaseDefenseValue(float value)
+    {
+        currentDefenseValue -= value;
+        if (currentDefenseValue <= 0)
         {
-            currentGuardValue = 0;
+            currentDefenseValue = 50;
             SetState(CharacterState.Stunned,20); // 进入眩晕状态
         }
     }
 
     // 超必杀条逻辑 - 增加超必杀数值
-    public void IncreaseSuperMeterValue(int value)
+    public void IncreaseSuperValue(float value)
     {
         currentSuperValue += value;
-        if (currentSuperValue >= 50)
+        if (currentSuperValue >= 50&&currentSuperCount<maxSuperCount)
         {
-            currentSuperValue -= 50;
             currentSuperCount++;
-
-            if (currentSuperCount > 3)
+            if (currentSuperCount < 3)
             {
-                currentSuperCount = 3; // 超必杀条数上限为 3
+                currentSuperValue -= 50;
+            }
+            else
+            {
+                currentSuperValue = 50;
             }
         }
     }

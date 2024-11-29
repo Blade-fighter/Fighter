@@ -14,10 +14,10 @@ public class HeadBars : MonoBehaviour
     public Text EnemyHealth;
 
     [Header("破防条")]
-    public Slider PlayerGuardBar;
-    public Text PlayerGuard;
-    public Slider EnemyGuardBar;
-    public Text EnemyGuard;
+    public Slider PlayerDefenseBar;
+    public Text PlayerDefense;
+    public Slider EnemyDefenseBar;
+    public Text EnemyDefense;
 
     [Header("超必杀条")]
     public Slider PlayerSuperBar;
@@ -32,13 +32,13 @@ public class HeadBars : MonoBehaviour
         Player = GameObject.FindWithTag("Player").GetComponent<Character>();
         Enemy = GameObject.FindWithTag("Enemy").GetComponent<Character>();
         UpdateHealthBar();
-        UpdateGuardBar();
+        UpdateDefenseBar();
         UpdateSuperBar();
     }
     private void Update()
     {
         UpdateHealthBar();
-        UpdateGuardBar();
+        UpdateDefenseBar();
         UpdateSuperBar();
     }
 
@@ -60,22 +60,22 @@ public class HeadBars : MonoBehaviour
         }
     }
 
-    private void UpdateGuardBar()
+    private void UpdateDefenseBar()
     {
-        float playerGuardPercent = (float)Player.currentGuardValue / Player.maxGuardValue;
-        float enemyGuardPercent = (float)Player.currentGuardValue / Player.maxGuardValue;
+        float playerGuardPercent = (float)Player.currentDefenseValue / Player.maxDefenseValue;
+        float enemyGuardPercent = (float)Player.currentDefenseValue / Player.maxDefenseValue;
 
-        if (PlayerGuardBar.value!=playerGuardPercent)
+        if (PlayerDefenseBar.value!=playerGuardPercent)
         {
             // 更新破防条逻辑
-            PlayerGuard.text = (int)Player.currentGuardValue + "/" + (int)Player.maxGuardValue;
-            PlayerGuardBar.value = playerGuardPercent;
+            PlayerDefense.text = (int)Player.currentDefenseValue + "/" + (int)Player.maxDefenseValue;
+            PlayerDefenseBar.value = playerGuardPercent;
         }
-        if (EnemyGuardBar.value != enemyGuardPercent)
+        if (EnemyDefenseBar.value != enemyGuardPercent)
         {
             // 更新破防条逻辑
-            EnemyGuard.text = (int)Enemy.currentGuardValue + "/" + (int)Enemy.maxGuardValue;
-            EnemyGuardBar.value = enemyGuardPercent;
+            EnemyDefense.text = (int)Enemy.currentDefenseValue + "/" + (int)Enemy.maxDefenseValue;
+            EnemyDefenseBar.value = enemyGuardPercent;
         }
     }
 

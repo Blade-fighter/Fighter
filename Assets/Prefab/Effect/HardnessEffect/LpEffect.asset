@@ -17,3 +17,6 @@ MonoBehaviour:
   attackInterruptedHardness: 5
   recoveryPunishHardness: 6
   moveEffect: {fileID: 11400000, guid: 1894e4394a383fc4f8374497573331e2, type: 2}
+  damage: 3
+  defenseDecrease: 3
+  superIncrease: 4
