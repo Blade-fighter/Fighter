@@ -8,10 +8,12 @@ public class Card
     public CardType cardType;      //卡牌类型
     public string cardDescription;//卡牌描述
     public Sprite cardImage;     // 卡牌图像
+    public float damage; // 伤害值
+    public float defenseDecrease;//破防值
+    public float superIncrease;//超必杀增加量
     public int startupKe; // 出招所需的刻数
     public int activeKe; // 命中判定所需的刻数
     public int recoveryKe; // 收招所需的刻数,多段招式只需设置这个
-    public int damage; // 伤害值
     public CardEffect[] startEffect; // 卡牌打出时附带的效果
     public CardEffect[] hitEffect; // 卡牌命中时附带的效果
     public AttackCollider attackColliderPrefab; // 攻击碰撞体预制体
@@ -20,7 +22,7 @@ public class Card
 
     public List<HitData> multiHitData; // 多段攻击的数据
     // 构造函数
-    public Card(string name, CardType cardType, string cardDescription, Sprite cardImage, int startupKe, int activeKe, int recoveryKe, AttackCollider attackColliderPrefab, CardEffect[] startEffect, CardEffect[] hitEffect,List<HitData> multiHitData)
+    public Card(string name, CardType cardType, string cardDescription, Sprite cardImage,int startupKe, int activeKe, int recoveryKe, AttackCollider attackColliderPrefab, CardEffect[] startEffect, CardEffect[] hitEffect,List<HitData> multiHitData)
     {
         this.name = name;
         this.cardType = cardType;
@@ -30,7 +32,6 @@ public class Card
         this.activeKe = activeKe;
         this.recoveryKe = recoveryKe;
         this.attackColliderPrefab = attackColliderPrefab;
-        //动画加在这里
         this.startEffect = startEffect;
         this.hitEffect = hitEffect;
         this.multiHitData = multiHitData;

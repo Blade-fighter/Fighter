@@ -29,6 +29,17 @@ public class Character : MonoBehaviour
 
     public Animator animator;
     public CharacterAnimation cAnim;
+
+    public float maxHealth = 100;
+    public float currentHealth = 100;
+
+    public float currentDefenseValue = 50;
+    public float maxDefenseValue = 50;
+
+    public int currentSuperCount = 0;
+    public int maxSuperCount = 3;
+    public float currentSuperValue = 0;
+    public float maxSuperValue = 50;
     private void Start()
     {
         animator =  transform.GetChild(0).GetComponent<Animator>();
@@ -99,18 +110,6 @@ public class Character : MonoBehaviour
         }, this);
 
         ActionScheduler.Instance.ScheduleAction(currentAction);
-    }
-
-    public void TakeDamage(int damage)
-    {
-        Debug.Log(cName + " took " + damage + " damage.");
-        // 处理生命值减少的逻辑
-    }
-
-    public void Heal(int amount)
-    {
-        Debug.Log(cName + " healed " + amount + " health.");
-        // 处理生命值增加的逻辑
     }
 
     public void MoveBack(float distance,int durationKe)
@@ -325,6 +324,55 @@ public class Character : MonoBehaviour
                 // 在每个刻时移动一部分距离
                 transform.position += movePerKe;
             }, this));
+        }
+    }
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+    }
+
+    public void Heal(float amount)
+    {
+        currentHealth += amount;
+        if(currentHealth>maxHealth)
+            currentHealth = maxHealth;
+    }
+
+    // 破防条逻辑 - 减少值
+    public void DecreaseDefenseValue(float value)
+    {
+        currentDefenseValue -= value;
+        if (currentDefenseValue <= 0)
+        {
+            currentDefenseValue = 50;
+            SetState(CharacterState.Stunned,20); // 进入眩晕状态
+        }
+    }
+
+    // 超必杀条逻辑 - 增加超必杀数值
+    public void IncreaseSuperValue(float value)
+    {
+        currentSuperValue += value;
+        if (currentSuperValue >= 50&&currentSuperCount<maxSuperCount)
+        {
+            currentSuperCount++;
+            if (currentSuperCount < 3)
+            {
+                currentSuperValue -= 50;
+            }
+            else
+            {
+                currentSuperValue = 50;
+            }
+        }
+    }
+
+    // 消耗超必杀条
+    public void UseSuperMeter(int count)
+    {
+        if (currentSuperCount >= count)
+        {
+            currentSuperCount -= count;
         }
     }
 }

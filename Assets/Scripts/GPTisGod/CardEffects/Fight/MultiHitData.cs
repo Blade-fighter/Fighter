@@ -9,7 +9,9 @@ public class HitData
 {
     public int startupKe; // 出招所需的刻数
     public int activeKe;  // 命中判定所需的刻数
-    public int damage; // 伤害值
+    public float damage; // 伤害值
+    public float defenseDecrease;//破防值
+    public float superIncrease;//超必杀增加量
     public GameObject attackColliderPrefab; // 每段攻击对应的碰撞体
     public List<CardEffect> startEffects; //每段起手效果
     public List<CardEffect> hitEffects; // 每段攻击的效果
