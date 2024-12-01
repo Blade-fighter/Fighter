@@ -11,8 +11,7 @@ namespace GenerateRoom
         public RoomItem NormalRoomItem;
         public RoomItem ShopRoomItem;
         public RoomItem BossRoomItem;
-        
-        
+
         public LineRenderer Line;
         public DynaGrid<RoomItem> Grid = new DynaGrid<RoomItem>();
 
@@ -20,63 +19,59 @@ namespace GenerateRoom
         {
             var startRoom = new RoomConfig().StartRoom;
             GenerateRoomByDfs(startRoom);
-            
+
             Grid.ForEach(room =>
             {
                 DrawLine(room);
             });
         }
-        //深度优先遍历生成地图数据
-        void GenerateRoomByDfs(RoomNode startRoom,int level = 0)
+
+        void GenerateRoomByDfs(RoomNode startRoom)
         {
             if (Grid[startRoom.X, startRoom.Y] == null)
             {
                 var room = Instantiate(GetRoomItemByType(startRoom));
                 Grid[startRoom.X, startRoom.Y] = room;
                 room.Node = startRoom;
-                room.transform.position = new Vector3(startRoom.X * 2, 2 * level);
+                room.transform.position = new Vector3(startRoom.X , startRoom.Y );
                 room.gameObject.SetActive(true);
             }
-            
+
             foreach (var startRoomNextRoom in startRoom.NextRooms)
             {
-                GenerateRoomByDfs(startRoomNextRoom, level + 1);
+                GenerateRoomByDfs(startRoomNextRoom);
             }
         }
-        
+
         RoomItem GetRoomItemByType(RoomNode roomNode)
         {
-            if (roomNode.Type == RoomType.Normal)
+            switch (roomNode.Type)
             {
-                return NormalRoomItem;
+                case RoomType.Normal:
+                    return NormalRoomItem;
+                case RoomType.Start:
+                    return StartRoomItem;
+                case RoomType.Shop:
+                    return ShopRoomItem;
+                case RoomType.Boss:
+                    return BossRoomItem;
+                default:
+                    return null;
             }
-            else if (roomNode.Type == RoomType.Start)
-            {
-                return StartRoomItem;
-            }
-            else if (roomNode.Type == RoomType.Shop)
-            {
-                return ShopRoomItem;
-            }
-            else if (roomNode.Type == RoomType.Boss)
-            {
-                return BossRoomItem;
-            }
-
-            return null;
         }
-        
+
         void DrawLine(RoomItem roomItem)
         {
             foreach (var nodeNextRoom in roomItem.Node.NextRooms)
             {
                 var line = Instantiate(Line);
-                line.SetPosition(0,roomItem.transform.position);
-                line.SetPosition(1,Grid[nodeNextRoom.X,nodeNextRoom.Y].transform.position);
+                line.SetPosition(0, roomItem.transform.position);
+                line.SetPosition(1, Grid[nodeNextRoom.X, nodeNextRoom.Y].transform.position);
                 line.gameObject.SetActive(true);
             }
         }
     }
+
     public class DynaGrid<T>
     {
         private Dictionary<Tuple<int, int>, T> mGrid = null;
@@ -101,7 +96,7 @@ namespace GenerateRoom
                 each(kvp.Value);
             }
         }
-        
+
         public T this[int xIndex, int yIndex]
         {
             get
