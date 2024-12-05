@@ -1181,7 +1181,7 @@ MonoBehaviour:
   hitCollider: {fileID: 400631001}
   attackCollider: {fileID: 0}
   canAct: 0
-  deck: {fileID: 0}
+  deck: {fileID: 1457672476}
   dir: 0
   leftBoundary: -19
   rightBoundary: 19
@@ -2405,6 +2405,8 @@ GameObject:
   - component: {fileID: 970601142}
   - component: {fileID: 970601147}
   - component: {fileID: 970601148}
+  - component: {fileID: 970601150}
+  - component: {fileID: 970601151}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -2517,7 +2519,7 @@ MonoBehaviour:
   hitCollider: {fileID: 970601143}
   attackCollider: {fileID: 0}
   canAct: 0
-  deck: {fileID: 0}
+  deck: {fileID: 970601151}
   dir: 1
   leftBoundary: -19
   rightBoundary: 19
@@ -2525,8 +2527,8 @@ MonoBehaviour:
   groundHeight: 0
   shouldGoToDowned: 1
   currentAirbornePriority: 0
-  animator: {fileID: 0}
-  cAnim: {fileID: 0}
+  animator: {fileID: 1674863408}
+  cAnim: {fileID: 970601148}
   maxHealth: 100
   currentHealth: 100
   currentDefenseValue: 50
@@ -2548,6 +2550,58 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   character: {fileID: 0}
+--- !u!114 &970601150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 970601141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b5f5d83b8f63a64fb71529b51b990d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character: {fileID: 0}
+  enemyDeck: {fileID: 0}
+  player: {fileID: 0}
+  moveForwardValue: 100
+  moveBackwardValue: 100
+  moveDurationKe: 5
+  moveDistance: 2
+--- !u!114 &970601151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 970601141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0967a1f328aabe48b40e0208db7f82f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showCard: 0
+  allCards:
+  - {fileID: 11400000, guid: b1629cba405f6924299d4c15f591373d, type: 2}
+  - {fileID: 11400000, guid: b1629cba405f6924299d4c15f591373d, type: 2}
+  - {fileID: 11400000, guid: b1629cba405f6924299d4c15f591373d, type: 2}
+  - {fileID: 11400000, guid: b1629cba405f6924299d4c15f591373d, type: 2}
+  - {fileID: 11400000, guid: b1629cba405f6924299d4c15f591373d, type: 2}
+  - {fileID: 11400000, guid: 0b52c5cc5abf1584f9d478f3a0acb3ac, type: 2}
+  - {fileID: 11400000, guid: 0b52c5cc5abf1584f9d478f3a0acb3ac, type: 2}
+  - {fileID: 11400000, guid: 0b52c5cc5abf1584f9d478f3a0acb3ac, type: 2}
+  - {fileID: 11400000, guid: 0b52c5cc5abf1584f9d478f3a0acb3ac, type: 2}
+  - {fileID: 11400000, guid: 0b52c5cc5abf1584f9d478f3a0acb3ac, type: 2}
+  drawPile: []
+  discardPile: []
+  hand: []
+  maxHandSize: 4
+  cardUIPrefab: {fileID: 0}
+  handPanel: {fileID: 0}
+  maxCardSpacing: 100
+  maxHandWidth: 600
+  leftSpace: -250
 --- !u!1 &982680152
 GameObject:
   m_ObjectHideFlags: 0
@@ -3884,7 +3938,7 @@ GameObject:
   - component: {fileID: 1457672477}
   - component: {fileID: 1457672476}
   m_Layer: 0
-  m_Name: Deck
+  m_Name: PlayerDeck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3902,6 +3956,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0967a1f328aabe48b40e0208db7f82f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showCard: 1
   allCards:
   - {fileID: 11400000, guid: b1629cba405f6924299d4c15f591373d, type: 2}
   - {fileID: 11400000, guid: b1629cba405f6924299d4c15f591373d, type: 2}
@@ -4803,7 +4858,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -494.00003, y: -378}
+  m_AnchoredPosition: {x: -494, y: -378}
   m_SizeDelta: {x: -1500, y: -980}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2003063693

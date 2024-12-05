@@ -52,7 +52,14 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (isCardEffectActive) return; // 正在执行卡牌效果时不允许开始拖动
+        if (playerCharacter.currentState != CharacterState.Idle)
+        {
+            return; //不为Idle不能打出卡牌，后面如果有取消什么的，得改
+        }
+        if (isCardEffectActive)
+        {
+            return; // 正在执行卡牌效果时不允许开始拖动
+        }
         canvasGroup.alpha = 0.6f;
         canvasGroup.blocksRaycasts = false;
     }
@@ -82,7 +89,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             playerCharacter.ExecuteCard(cardData, enemyCharacter);
 
             // 从手牌移除卡牌并添加到弃牌堆
-            Deck deck = FindObjectOfType<Deck>();
+            Deck deck = playerCharacter.deck;
             if (deck != null)
             {
                 deck.PlayCard(cardData);

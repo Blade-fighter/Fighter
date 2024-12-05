@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
+    public bool showCard = true;
     public List<CardData> allCards = new List<CardData>(); // 玩家完整的卡组（用于永久存储所有卡牌）
     public List<CardData> drawPile = new List<CardData>(); // 抽牌堆
     public List<CardData> discardPile = new List<CardData>(); // 弃牌堆
@@ -47,7 +48,7 @@ public class Deck : MonoBehaviour
             CardData drawnCard = drawPile[0];
             hand.Add(drawnCard); // 将新卡牌插入手牌的最右边
             drawPile.RemoveAt(0);
-            Debug.Log("Drew card: " + drawnCard.cardName);
+            //Debug.Log("Drew card: " + drawnCard.cardName);
 
             // 更新手牌 UI
             UpdateHandUI();
@@ -88,7 +89,7 @@ public class Deck : MonoBehaviour
             drawPile.AddRange(discardPile);
             discardPile.Clear();
             Shuffle(drawPile);
-            Debug.Log("Reshuffled discard pile into draw pile.");
+            //Debug.Log("Reshuffled discard pile into draw pile.");
         }
     }
 
@@ -105,6 +106,8 @@ public class Deck : MonoBehaviour
 
     private void UpdateHandUI()
     {
+        if(!showCard)
+            { return; }
         // 清空当前手牌的 UI 显示
         foreach (Transform child in handPanel)
         {

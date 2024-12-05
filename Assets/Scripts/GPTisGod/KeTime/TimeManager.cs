@@ -8,6 +8,7 @@ public class TimeManager : MonoBehaviour
     public float keDuration = 1.0f/60; // 每刻的时间长度
     private float timer;
     public bool isPaused;
+    public Animator animator;
 
     private void Awake()
     {
@@ -20,6 +21,7 @@ public class TimeManager : MonoBehaviour
 
     private void Start()
     {
+        animator = GameObject.FindWithTag("Enemy").transform.GetChild(0).GetComponent<Animator>();//获取敌人动画机
         PauseGame(); // 启动时暂停游戏
     }
 
@@ -35,6 +37,12 @@ public class TimeManager : MonoBehaviour
                 currentKe++;
                 ActionScheduler.Instance.ProcessKe(currentKe);
             }
+
+            animator.speed = 1;
+        }
+        else 
+        {
+            animator.speed = 0;
         }
     }
 

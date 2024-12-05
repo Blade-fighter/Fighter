@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c9ac33887ae84340aaf2265b4e6d289, type: 3}
   m_Name: JumpForward
   m_EditorClassIdentifier: 
+  setState: 1
   moveSteps:
   - moveVector: {x: 3, y: 3.5}
     ke: 5
   - moveVector: {x: 6, y: 3.5}
     ke: 5
-  - moveVector: {x: 0, y: -7}
+  - moveVector: {x: -0, y: -7}
     ke: 3
   giveToTarget: 0
   toGround: 0

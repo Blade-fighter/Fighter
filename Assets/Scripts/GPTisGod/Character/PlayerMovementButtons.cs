@@ -23,7 +23,7 @@ public class PlayerMovementButtons : MonoBehaviour
     // 执行移动
     void ExecuteMove(float distance)
     {
-        if (playerCharacter != null && !CardUI.isCardEffectActive && !isMoving)
+        if (playerCharacter != null && !CardUI.isCardEffectActive && !isMoving&&playerCharacter.currentState == CharacterState.Idle)
         {
             isMoving = true;
             // 禁用按钮和卡牌使用

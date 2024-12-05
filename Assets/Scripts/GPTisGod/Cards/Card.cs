@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class Card
 {
@@ -69,13 +70,19 @@ public class Card
         character.SetState(CharacterState.Defending, startupKe);
 
         // 恢复时间流动，以执行动作
-        TimeManager.Instance.ResumeGame();
+        if(character.tag == "Player")
+        {
+            TimeManager.Instance.ResumeGame(); 
+        }
 
         // 延迟 startupKe 后恢复为 Idle 状态并暂停时间
         ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + startupKe, () =>
         {
             character.SetState(CharacterState.Idle, 0);
-            TimeManager.Instance.PauseGame(); // 玩家恢复为 Idle 状态后暂停游戏
+            if (character.tag == "Player")
+            {
+                TimeManager.Instance.PauseGame();
+            }
             character.animator.SetInteger("AttackIndex", 0);//重置招式index
             // 通知 CardUI 卡牌效果已完成
             CardUI.CardEffectComplete();
@@ -88,8 +95,10 @@ public class Card
         attacker.SetState(CharacterState.AttackingStartup, startupKe);
 
         // 恢复时间流动以执行动作
-        TimeManager.Instance.ResumeGame();
-
+        if (attacker.tag == "Player")
+        {
+            TimeManager.Instance.ResumeGame();
+        }
         // 起始效果触发
         foreach (CardEffect effect in startEffect)
         {
@@ -158,7 +167,10 @@ public class Card
         ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + startupKe + activeKe + recoveryKe, () =>
         {
             attacker.SetState(CharacterState.Idle, 0);
-            TimeManager.Instance.PauseGame(); // 玩家恢复为 Idle 状态后暂停游戏
+            if (attacker.tag == "Player")
+            {
+                TimeManager.Instance.PauseGame();
+            }
             attacker.animator.SetInteger("AttackIndex", 0);//重置招式index
             // 通知 CardUI 卡牌效果已完成
             CardUI.CardEffectComplete();
@@ -178,7 +190,10 @@ public class Card
                 ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + startupKe + activeKe + recoveryKe, () =>
                 {
                     attacker.SetState(CharacterState.Idle, 0);
-                    TimeManager.Instance.PauseGame(); // 玩家恢复为 Idle 状态后暂停游戏
+                    if (attacker.tag == "Player")
+                    {
+                        TimeManager.Instance.PauseGame();
+                    }
                     attacker.animator.SetInteger("AttackIndex", 0);//重置招式index
                     // 通知 CardUI 卡牌效果已完成
                     CardUI.CardEffectComplete();
@@ -189,7 +204,10 @@ public class Card
             HitData currentHit = multiHitData[currentHitIndex];
             attacker.SetState(CharacterState.AttackingStartup, currentHit.startupKe);
             // 恢复时间流动以执行动作
-            TimeManager.Instance.ResumeGame();
+            if (attacker.tag == "Player")
+            {
+                TimeManager.Instance.ResumeGame();
+            }
 
             foreach (CardEffect effect in currentHit.startEffects)//每段的起始效果
             {
@@ -233,7 +251,10 @@ public class Card
     public void ExecuteMove(Character attacker, Character target)
     {
         // 恢复时间流动以执行动作
-        TimeManager.Instance.ResumeGame();
+        if (attacker.tag == "Player")
+        {
+            TimeManager.Instance.ResumeGame();
+        }
 
         // 起始效果触发
         foreach (CardEffect effect in startEffect)
@@ -244,7 +265,10 @@ public class Card
         ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + startupKe + activeKe + recoveryKe, () =>
         {
             attacker.SetState(CharacterState.Idle, 0);
-            TimeManager.Instance.PauseGame(); // 玩家恢复为 Idle 状态后暂停游戏
+            if (attacker.tag == "Player")
+            {
+                TimeManager.Instance.PauseGame();
+            }
 
             // 通知 CardUI 卡牌效果已完成
             CardUI.CardEffectComplete();

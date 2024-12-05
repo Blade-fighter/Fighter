@@ -57,6 +57,15 @@ public class Character : MonoBehaviour
             gameObject.transform.position = new Vector3(leftBoundary, gameObject.transform.position.y, gameObject.transform.position.z);
         }
 
+        //如果玩家角色不为Idle，恢复时间流动，如果后面有取消之类的机制，这个得改
+        if (gameObject.tag == "Player" && currentState != CharacterState.Idle)
+        {
+            TimeManager.Instance.ResumeGame();
+        }
+        if (gameObject.tag == "Player" && currentState == CharacterState.Idle)
+        {
+            TimeManager.Instance.PauseGame();
+        }
     }
     private void FixedUpdate()
     {
