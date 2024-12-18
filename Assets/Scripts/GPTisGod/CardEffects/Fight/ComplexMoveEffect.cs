@@ -21,10 +21,11 @@ public class ComplexMoveEffect : CardEffect // 移动效果
     public bool toGround;//打完是否回地面
     public override void Trigger(Character target, Character attacker)
     {
+        List <StepMoveData> tempSteps = moveSteps;
         if (setState)
         {
             int attackerMoveKe= 0;
-            foreach (StepMoveData step in moveSteps)
+            foreach (StepMoveData step in tempSteps)
             {
                 attackerMoveKe += step.ke;
             }
@@ -33,15 +34,15 @@ public class ComplexMoveEffect : CardEffect // 移动效果
         //设置的时候默认出招者在左敌人在右，对敌方的效果正数为往右
         if ((giveToTarget&&!target.dir)||(!giveToTarget&&attacker.dir))
         {
-            foreach (StepMoveData step in moveSteps) //反向
+            foreach (StepMoveData step in tempSteps) //反向
             {
                 step.moveVector = new Vector2(-step.moveVector.x, step.moveVector.y);
             }
         }
         if(giveToTarget)
-        ApplyMultiStepMove(target,moveSteps,toGround);
+        ApplyMultiStepMove(target, tempSteps, toGround);
         if(!giveToTarget)
-        ApplyMultiStepMove(attacker,moveSteps,toGround);
+        ApplyMultiStepMove(attacker, tempSteps, toGround);
     }
 
 }
