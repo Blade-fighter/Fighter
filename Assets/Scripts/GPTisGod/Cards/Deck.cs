@@ -16,6 +16,13 @@ public class Deck : MonoBehaviour
     public float maxHandWidth = 600f; // 手牌的最大占用宽度
     public float leftSpace=-250f;//手牌最左侧的位置
 
+    public GameObject discard;
+    public static Deck instance;
+
+    void Awake(){        
+        instance = this;
+    }
+
     void Start()
     {
         StartBattle();

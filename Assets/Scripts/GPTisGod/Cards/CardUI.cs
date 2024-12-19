@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Unity.VisualScripting;
+using System;
 
 public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -14,12 +16,21 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     public Character playerCharacter;
     public Character enemyCharacter;
 
+    public bool IsMoving;
+    public Vector3 MoveTarget;
+    public bool MovingEndDestroy;
+    public float MoveSpeed;
+    public float TotalTime;
+    public float CurTime;
+    public Vector3 OriginPosition;
+
     void Start()
     {
+        IsMoving = false;
+        MoveSpeed = 80.0f;
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
         canvas = GetComponentInParent<Canvas>();
-        originalPosition = rectTransform.position;
 
         // 设置卡牌的UI显示
         UpdateCardVisual();
@@ -50,6 +61,25 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
         }
     }
 
+    void Update(){
+        Move();
+    }
+
+    private void Move(){
+        if(!IsMoving) return;
+        rectTransform.transform.position = Vector3.Lerp(OriginPosition, MoveTarget, CurTime/TotalTime);
+        CurTime += Time.deltaTime;
+        if(CurTime > TotalTime){
+            IsMoving = false;
+            // 从手牌移除卡牌并添加到弃牌堆
+            Deck deck = playerCharacter.deck;
+            if (deck != null)
+            {
+                deck.PlayCard(cardData);
+            }
+        }
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (playerCharacter.currentState != CharacterState.Idle)
@@ -66,21 +96,23 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (isCardEffectActive) return; // 正在执行卡牌效果时不允许拖动
+        if (isCardEffectActive || IsMoving) return; // 正在执行卡牌效果时不允许拖动
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (isCardEffectActive) return; // 正在执行卡牌效果时不允许打出卡牌
+        if (isCardEffectActive || IsMoving) return; // 正在执行卡牌效果时不允许打出卡牌
 
         canvasGroup.alpha = 1.0f;
         canvasGroup.blocksRaycasts = true;
+        IsMoving = true;
 
         // 判断卡牌是否释放在有效区域
         if (!IsValidDropPosition(eventData.position))
         {
-            rectTransform.position = originalPosition;
+            MovingEndDestroy = false;
+            MoveTarget = originalPosition;
         }
         else
         {
@@ -88,16 +120,13 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             isCardEffectActive = true;
             playerCharacter.ExecuteCard(cardData, enemyCharacter);
 
-            // 从手牌移除卡牌并添加到弃牌堆
             Deck deck = playerCharacter.deck;
-            if (deck != null)
-            {
-                deck.PlayCard(cardData);
-            }
-
-            // 移除卡牌 UI 以模拟卡牌被打出的效果
-            Destroy(gameObject);
+            MovingEndDestroy = true;
+            MoveTarget = deck.discard.transform.position;
         }
+        OriginPosition = rectTransform.transform.position;
+        TotalTime = Math.Abs((OriginPosition - MoveTarget).magnitude / MoveSpeed);
+        CurTime = 0.0f;
     }
 
     public static void CardEffectComplete()
