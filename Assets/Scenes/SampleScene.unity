@@ -4516,6 +4516,7 @@ MonoBehaviour:
   maxCardSpacing: 100
   maxHandWidth: 600
   leftSpace: -250
+  discard: {fileID: 0}
 --- !u!1 &982680152
 GameObject:
   m_ObjectHideFlags: 0
@@ -6308,6 +6309,7 @@ MonoBehaviour:
   maxCardSpacing: 200
   maxHandWidth: 1100
   leftSpace: -250
+  discard: {fileID: 2086372569}
 --- !u!4 &1457672477
 Transform:
   m_ObjectHideFlags: 0
@@ -7572,7 +7574,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -494, y: -378}
+  m_AnchoredPosition: {x: -494.00003, y: -378.0001}
   m_SizeDelta: {x: -1500, y: -980}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2003063693
