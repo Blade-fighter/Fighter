@@ -9,7 +9,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     public CardData cardData; // 关联的卡牌数据
 
     private Canvas canvas;
-    private RectTransform rectTransform;
+    public RectTransform rectTransform;
     private CanvasGroup canvasGroup;
     private Vector3 originalPosition;
     public static bool isCardEffectActive = false; // 用于判断卡牌效果是否正在进行
@@ -23,25 +23,26 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     public float TotalTime;
     public float CurTime;
     public Vector3 OriginPosition;
+    public bool IsDiscard;
+    public bool IsSrc;
 
     void Start()
     {
-        IsMoving = false;
-        MoveSpeed = 80.0f;
-        rectTransform = GetComponent<RectTransform>();
-        canvasGroup = GetComponent<CanvasGroup>();
-        canvas = GetComponentInParent<Canvas>();
-
-        // 设置卡牌的UI显示
-        UpdateCardVisual();
-        // 获取玩家和敌人的 Character 实例
-        playerCharacter = GameObject.FindGameObjectWithTag("Player").GetComponent<Character>();
-        enemyCharacter = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Character>();
     }
 
     public void UpdateCardVisual()
     {
+        IsMoving = false;
+        MoveSpeed = 1000.0f;
+        rectTransform = this.gameObject.GetComponent<RectTransform>();
+        canvasGroup = GetComponent<CanvasGroup>();
+        canvas = GetComponentInParent<Canvas>();
+
+        // 获取玩家和敌人的 Character 实例
+        playerCharacter = GameObject.FindGameObjectWithTag("Player").GetComponent<Character>();
+        enemyCharacter = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Character>();
         // 更新卡牌名称
+
         Text nameText = transform.GetChild(3).GetComponent<Text>();
         if (nameText != null)
         {
@@ -67,7 +68,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     private void Move(){
         if(!IsMoving) return;
-        rectTransform.transform.position = Vector3.Lerp(OriginPosition, MoveTarget, CurTime/TotalTime);
+        rectTransform.anchoredPosition = Vector3.Lerp(OriginPosition, MoveTarget, CurTime/TotalTime);
         CurTime += Time.deltaTime;
         if(CurTime > TotalTime){
             IsMoving = false;
@@ -75,7 +76,10 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             Deck deck = playerCharacter.deck;
             if (deck != null)
             {
-                deck.PlayCard(cardData);
+                Debug.Log(cardData.handIndex);
+                if(IsDiscard) deck.PlayCard(cardData);
+                else if(IsSrc) return;
+                if(MovingEndDestroy) Destroy(this.gameObject);
             }
         }
     }
@@ -106,13 +110,11 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
         canvasGroup.alpha = 1.0f;
         canvasGroup.blocksRaycasts = true;
-        IsMoving = true;
 
         // 判断卡牌是否释放在有效区域
         if (!IsValidDropPosition(eventData.position))
         {
-            MovingEndDestroy = false;
-            MoveTarget = originalPosition;
+            MoveTo(originalPosition, false, false, false);
         }
         else
         {
@@ -120,11 +122,18 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             isCardEffectActive = true;
             playerCharacter.ExecuteCard(cardData, enemyCharacter);
 
-            Deck deck = playerCharacter.deck;
-            MovingEndDestroy = true;
-            MoveTarget = deck.discard.transform.position;
+            Vector2 deckPos = playerCharacter.deck.discard.GetComponent<RectTransform>().anchoredPosition;
+            MoveTo(deckPos, true, true, false);
         }
-        OriginPosition = rectTransform.transform.position;
+    }
+
+    public void MoveTo(Vector2 Target, bool SelfDestroy, bool isDiscard, bool isSrc){
+        IsDiscard = isDiscard;
+        IsSrc = isSrc;
+        IsMoving = true;
+        MovingEndDestroy = SelfDestroy;
+        MoveTarget = Target;
+        OriginPosition = rectTransform.anchoredPosition;
         TotalTime = Math.Abs((OriginPosition - MoveTarget).magnitude / MoveSpeed);
         CurTime = 0.0f;
     }

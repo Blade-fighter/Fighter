@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Deck : MonoBehaviour
 {
@@ -8,7 +10,7 @@ public class Deck : MonoBehaviour
     public List<CardData> drawPile = new List<CardData>(); // 抽牌堆
     public List<CardData> discardPile = new List<CardData>(); // 弃牌堆
     public List<CardData> hand = new List<CardData>(); // 手牌
-    public int maxHandSize = 4; // 初始手牌数量
+    public int maxHandSize = 1; // 初始手牌数量
 
     public GameObject cardUIPrefab; // 卡牌 UI 预制体
     public Transform handPanel; // 用于显示手牌的 UI 面板
@@ -19,12 +21,26 @@ public class Deck : MonoBehaviour
     public GameObject discard;
     public static Deck instance;
 
+    public Button discardButton;
+    public Button bagButton;
+
     void Awake(){        
         instance = this;
     }
 
+    private void OnDiscardButtonClick(){
+        Debug.Log("OnDiscardButtonClick");
+    }
+
+    private void OnBagButtonClick(){
+        Debug.Log("OnBagButtonClick");
+    }
+
+
     void Start()
     {
+        discardButton.onClick.AddListener(OnDiscardButtonClick);
+        bagButton.onClick.AddListener(OnBagButtonClick);
         StartBattle();
     }
 
@@ -32,6 +48,9 @@ public class Deck : MonoBehaviour
     {
         // 初始化战斗中的抽牌堆，将所有卡牌复制到抽牌堆
         drawPile = new List<CardData>(allCards);
+        for(int i = 0;i != drawPile.Count; ++i){
+            drawPile[i] = Instantiate(allCards[i]);
+        }
         Shuffle(drawPile);
         discardPile.Clear();
         hand.Clear();
@@ -39,26 +58,54 @@ public class Deck : MonoBehaviour
         // 抽取初始手牌
         for (int i = 0; i < maxHandSize; i++)
         {
-            DrawCard();
+            DrawCard(i);
         }
     }
 
-    public void DrawCard()
+    public bool DrawCard(int index)
     {
         if (hand.Count >= maxHandSize)
         {
-            return; // 已达到手牌上限
+            return true; // 已达到手牌上限
         }
 
         if (drawPile.Count > 0)
         {
             CardData drawnCard = drawPile[0];
-            hand.Add(drawnCard); // 将新卡牌插入手牌的最右边
+            drawnCard.handIndex = index;
             drawPile.RemoveAt(0);
-            //Debug.Log("Drew card: " + drawnCard.cardName);
+            hand.Add(drawnCard);
 
             // 更新手牌 UI
-            UpdateHandUI();
+            RectTransform bagRect = bagButton.GetComponent<RectTransform>();
+            if(bagRect == null) Debug.Log("bagRect Is NuLL");
+            UpdateHandCard(bagRect.anchoredPosition, drawnCard);
+            return true;
+        }
+        return false;
+    }
+    private void UpdateHandCard(Vector2 Src, CardData data)
+    {
+        if(!showCard) return;
+
+        // 计算卡牌间距
+        float cardSpacing = Mathf.Min(maxCardSpacing, maxHandWidth / Mathf.Max(1, hand.Count));
+
+        GameObject cardUI = Instantiate(cardUIPrefab, handPanel);
+        RectTransform cardRect = cardUI.GetComponent<RectTransform>();
+        cardRect.anchoredPosition = Src;
+
+        CardUI cardUIScript = cardUI.GetComponent<CardUI>();
+        Vector2 Target = new Vector2(leftSpace + data.handIndex* cardSpacing, -375); // 设置卡牌的位置，按顺序排列
+        if (cardUIScript != null)
+        {
+            cardUIScript.cardData = data;
+            cardUIScript.UpdateCardVisual();
+            cardUIScript.MoveTo(Target, false, false, false);
+        }
+        else
+        {
+            Debug.LogWarning("CardUI script is missing on the card UI prefab.");
         }
     }
 
@@ -69,7 +116,6 @@ public class Deck : MonoBehaviour
         {
             hand.Remove(card);
             discardPile.Add(card);
-            UpdateHandUI();
 
             // 检查是否存在任何无效引用
             if (card == null)
@@ -77,15 +123,19 @@ public class Deck : MonoBehaviour
                 Debug.LogWarning("Card reference is null, might have been destroyed unexpectedly.");
             }
 
+            while(!DrawCard(card.handIndex)){
+                // 洗牌
+            }
+
             // 抽牌逻辑确保手牌上限
-            while (hand.Count < maxHandSize)
-            {
-                DrawCard();
-            }
-            if (drawPile.Count == 0)
-            {
-                ReshuffleDiscardIntoDraw(); // 抽牌堆为空时将弃牌堆洗入抽牌堆
-            }
+            // while (hand.Count < maxHandSize)
+            // {
+            //     DrawCard();
+            // }
+            // if (drawPile.Count == 0)
+            // {
+            //     ReshuffleDiscardIntoDraw(); // 抽牌堆为空时将弃牌堆洗入抽牌堆
+            // }
         }
     }
 
@@ -111,45 +161,10 @@ public class Deck : MonoBehaviour
         }
     }
 
-    private void UpdateHandUI()
-    {
-        if(!showCard)
-            { return; }
-        // 清空当前手牌的 UI 显示
-        foreach (Transform child in handPanel)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // 计算卡牌间距
-        float cardSpacing = Mathf.Min(maxCardSpacing, maxHandWidth / Mathf.Max(1, hand.Count));
-
-        // 为每张手牌生成一个新的 UI 元素，并按顺序排列
-        for (int i = 0; i < hand.Count; i++)
-        {
-            CardData card = hand[i];
-            GameObject cardUI = Instantiate(cardUIPrefab, handPanel);
-            RectTransform cardRect = cardUI.GetComponent<RectTransform>();
-            cardRect.anchoredPosition = new Vector2(leftSpace+i * cardSpacing, -375); // 设置卡牌的位置，按顺序排列
-
-            // 设置卡牌的层级，确保后生成的卡牌在前一张之上
-            cardUI.transform.SetSiblingIndex(i);
-
-            CardUI cardUIScript = cardUI.GetComponent<CardUI>();
-            if (cardUIScript != null)
-            {
-                cardUIScript.cardData = card;
-                cardUIScript.UpdateCardVisual();
-            }
-            else
-            {
-                Debug.LogWarning("CardUI script is missing on the card UI prefab.");
-            }
-        }
-    }
-
     private void UpdateDiscardPileUI()
     {
         // TODO: 实现弃牌堆的 UI 更新逻辑
     }
+
+
 }

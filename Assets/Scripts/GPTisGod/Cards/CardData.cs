@@ -29,6 +29,8 @@ public class CardData : ScriptableObject
     public float StunValue;//玩家眩晕的加值
     public float attackValue;//玩家正在攻击的加值
 
+    public int handIndex = -1; // index of hand
+
 }
 public enum CardType //卡牌类型
 {
