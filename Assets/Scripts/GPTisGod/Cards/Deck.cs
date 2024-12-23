@@ -23,17 +23,39 @@ public class Deck : MonoBehaviour
 
     public Button discardButton;
     public Button bagButton;
+    public Button closeZoneButton;
+    public bool InFresh = false; // ‘⁄œ¥≈∆
+    public GameObject CardZone;
+    public GameObject CardContent;
 
     void Awake(){        
         instance = this;
     }
 
     private void OnDiscardButtonClick(){
-        Debug.Log("OnDiscardButtonClick");
+        ShowZone(discardPile);
     }
 
     private void OnBagButtonClick(){
-        Debug.Log("OnBagButtonClick");
+        ShowZone(drawPile);
+    }
+
+    private void OnZoneCloseClick(){
+        CardZone.SetActive(false);
+        for (int i = 0; i < CardContent.transform.childCount; i++) {  
+            Destroy (CardContent.transform.GetChild (i).gameObject);  
+        }
+    }
+
+    private void ShowZone(List<CardData> datas){
+        CardZone.SetActive(true);
+        for(int i = 0;i != datas.Count; ++i){
+            GameObject cardUI = Instantiate(cardUIPrefab, CardContent.transform);
+            CardUI cardUIScript = cardUI.GetComponent<CardUI>();
+            cardUIScript.cardData = datas[i];
+            cardUIScript.UpdateCardVisual();
+            cardUIScript.CanInteractive = false;
+        }
     }
 
 
@@ -41,6 +63,8 @@ public class Deck : MonoBehaviour
     {
         discardButton.onClick.AddListener(OnDiscardButtonClick);
         bagButton.onClick.AddListener(OnBagButtonClick);
+        closeZoneButton.onClick.AddListener(OnZoneCloseClick);
+        CardZone.SetActive(false);
         StartBattle();
     }
 
@@ -64,6 +88,8 @@ public class Deck : MonoBehaviour
 
     public bool DrawCard(int index)
     {
+        if(InFresh) return false;
+
         if (hand.Count >= maxHandSize)
         {
             return true; // “—¥ÔµΩ ÷≈∆…œœﬁ
@@ -112,6 +138,7 @@ public class Deck : MonoBehaviour
 
     public void PlayCard(CardData card)
     {
+        if(InFresh) return;
         if (hand.Contains(card))
         {
             hand.Remove(card);
@@ -123,30 +150,41 @@ public class Deck : MonoBehaviour
                 Debug.LogWarning("Card reference is null, might have been destroyed unexpectedly.");
             }
 
-            while(!DrawCard(card.handIndex)){
+            if(!DrawCard(card.handIndex)){
                 // œ¥≈∆
+                ReshuffleDiscardToDraw(card.handIndex);
             }
-
-            // ≥È≈∆¬ﬂº≠»∑±£ ÷≈∆…œœﬁ
-            // while (hand.Count < maxHandSize)
-            // {
-            //     DrawCard();
-            // }
-            // if (drawPile.Count == 0)
-            // {
-            //     ReshuffleDiscardIntoDraw(); // ≥È≈∆∂—Œ™ø’ ±Ω´∆˙≈∆∂—œ¥»Î≥È≈∆∂—
-            // }
         }
     }
 
-    private void ReshuffleDiscardIntoDraw()//∆˙≈∆∂—œ¥ªÿ≥È≈∆∂—
+    private void ReshuffleDiscardToDraw(int endIndex)//∆˙≈∆∂—œ¥ªÿ≥È≈∆∂—
     {
+        if(InFresh) return;
+        InFresh = true;
         if (discardPile.Count > 0)
         {
-            drawPile.AddRange(discardPile);
-            discardPile.Clear();
-            Shuffle(drawPile);
-            //Debug.Log("Reshuffled discard pile into draw pile.");
+            List<CardData> temp = new List<CardData>(discardPile);
+            Shuffle(temp);
+            while(temp.Count != 0){
+                CardData data = temp[temp.Count-1];
+                temp.RemoveAt(temp.Count-1);
+                discardPile.Remove(data);
+
+                GameObject cardUI = Instantiate(cardUIPrefab, handPanel);
+                RectTransform cardRect = cardUI.GetComponent<RectTransform>();
+                cardRect.anchoredPosition = discardButton.GetComponent<RectTransform>().anchoredPosition;
+
+                CardUI cardUIScript = cardUI.GetComponent<CardUI>();
+                if(temp.Count == 0) cardUIScript.ToBagIndex = endIndex;
+                else cardUIScript.ToBagIndex = -1;
+
+                if (cardUIScript != null)
+                {
+                    cardUIScript.cardData = data;
+                    cardUIScript.UpdateCardVisual();
+                    cardUIScript.MoveTo(bagButton.GetComponent<RectTransform>().anchoredPosition, true, false, true);
+                }
+            }
         }
     }
 
@@ -160,11 +198,5 @@ public class Deck : MonoBehaviour
             cards[randomIndex] = temp;
         }
     }
-
-    private void UpdateDiscardPileUI()
-    {
-        // TODO:  µœ÷∆˙≈∆∂—µƒ UI ∏¸–¬¬ﬂº≠
-    }
-
 
 }

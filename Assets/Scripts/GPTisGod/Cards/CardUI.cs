@@ -26,6 +26,10 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     public bool IsDiscard;
     public bool IsSrc;
 
+    public int ToBagIndex;
+    public bool CanInteractive = true;
+
+
     void Start()
     {
     }
@@ -33,7 +37,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     public void UpdateCardVisual()
     {
         IsMoving = false;
-        MoveSpeed = 1000.0f;
+        MoveSpeed = 3000.0f;
         rectTransform = this.gameObject.GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
         canvas = GetComponentInParent<Canvas>();
@@ -76,9 +80,14 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             Deck deck = playerCharacter.deck;
             if (deck != null)
             {
-                Debug.Log(cardData.handIndex);
                 if(IsDiscard) deck.PlayCard(cardData);
-                else if(IsSrc) return;
+                else if(IsSrc){
+                    deck.drawPile.Add(cardData);
+                    if(ToBagIndex != -1){
+                        deck.InFresh = false;
+                        deck.DrawCard(ToBagIndex);
+                    }
+                }
                 if(MovingEndDestroy) Destroy(this.gameObject);
             }
         }
@@ -86,11 +95,13 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if(!CanInteractive) return;
         if (playerCharacter.currentState != CharacterState.Idle)
         {
             return; //不为Idle不能打出卡牌，后面如果有取消什么的，得改
         }
-        if (isCardEffectActive)
+        Deck deck = playerCharacter.deck;
+        if (isCardEffectActive || deck.InFresh)
         {
             return; // 正在执行卡牌效果时不允许开始拖动
         }
@@ -100,12 +111,14 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     public void OnDrag(PointerEventData eventData)
     {
+        if(!CanInteractive) return;
         if (isCardEffectActive || IsMoving) return; // 正在执行卡牌效果时不允许拖动
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if(!CanInteractive) return;
         if (isCardEffectActive || IsMoving) return; // 正在执行卡牌效果时不允许打出卡牌
 
         canvasGroup.alpha = 1.0f;
