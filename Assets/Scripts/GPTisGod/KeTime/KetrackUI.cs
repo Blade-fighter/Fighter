@@ -53,6 +53,10 @@ public class KeTrackerUI : MonoBehaviour
         ScheduledAction action = character.currentAction;
 
         int remainingKe = action != null ? action.executionKe - TimeManager.Instance.currentKe : 0;
+        if (state==CharacterState.Idle)//idle不显示时间
+        {
+            remainingKe = 0;
+        }
         stateText.text =ChangeStateToWord(state) + ": " + remainingKe+"刻";
 
         // 更新刻度表颜色
@@ -61,10 +65,7 @@ public class KeTrackerUI : MonoBehaviour
             if (i < remainingKe && state != CharacterState.Idle)
             {
                 // 根据状态改变颜色
-                if (state == CharacterState.Stunned)
-                    keImages[i].color = stunnedColor;
-                else
-                    keImages[i].color = otherStateColor;
+                keImages[i].color = ChooseColor(state);
             }
             else
             {
@@ -73,6 +74,43 @@ public class KeTrackerUI : MonoBehaviour
             }
         }
     }
+    Color ChooseColor(CharacterState state)
+    {
+        switch(state)
+        {
+            case CharacterState.Idle:
+                return idleColor;
+            case CharacterState.Stunned:
+                return Color.yellow;
+            case CharacterState.AttackingStartup:
+                return Color.green;
+            case CharacterState.AttackingActive:
+                return Color.red;
+            case CharacterState.Recovery:
+                return Color.blue;
+            case CharacterState.BlockedStunned:
+                return Color.yellow;
+            case CharacterState.Airborne:
+                return Color.yellow;
+            case CharacterState.AirborneAttacked:
+                return Color.yellow;
+            case CharacterState.Defending:
+                return Color.yellow;
+            case CharacterState.MovingFront:
+                return Color.yellow;
+            case CharacterState.MovingBack:
+                return Color.yellow;
+            case CharacterState.Downed:
+                return Color.yellow;
+            case CharacterState.Thrown:
+                return Color.yellow;
+            case CharacterState.Jumping://实际没有写跳跃招式把自己变成此状态的逻辑，等着加
+                return Color.yellow;
+            default:
+                return Color.white;
+        }
+    }
+
     string ChangeStateToWord(CharacterState state)
     {
         switch (state)

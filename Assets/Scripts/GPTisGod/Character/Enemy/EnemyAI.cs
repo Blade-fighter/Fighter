@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.XR;
 using static UnityEngine.GraphicsBuffer;
 
 
 public class EnemyAI : MonoBehaviour
 {
     public Character character; // 敌人角色的引用
-    public Deck enemyDeck; // 敌人手中的卡组引用
+    public EnemyDeck enemyDeck; // 敌人手中的卡组引用
     public Character player; // 玩家角色的引用
     float playerDistance = 10f;//双方距离
     [Header("AI Settings")]
@@ -26,7 +27,7 @@ public class EnemyAI : MonoBehaviour
     {
         character = GameObject.FindWithTag("Enemy").GetComponent<Character>();//查找敌人自己
         player = GameObject.FindWithTag("Player").GetComponent<Character>(); // 查找玩家角色
-        enemyDeck = gameObject.GetComponent<Deck>();
+        enemyDeck = gameObject.GetComponent<EnemyDeck>();
         ActionScheduler.Instance.ScheduleAction(new ScheduledAction(TimeManager.Instance.currentKe + initialWaitKe, MakeDecision, character)); // 等待初始刻数后做第一次决策
     }
 
@@ -180,6 +181,13 @@ public class EnemyAI : MonoBehaviour
             Card card = new Card(chosenCard.cardName, chosenCard.cardType, chosenCard.cardDescription, chosenCard.cardImage, chosenCard.startupKe, chosenCard.activeKe, chosenCard.recoveryKe, chosenCard.collider, chosenCard.startEffect, chosenCard.hitEffect, chosenCard.multiHitData);
             // 执行卡牌逻辑
             card.Execute(character, player);
+            enemyDeck.hand.Remove(chosenCard);
+            enemyDeck.discardPile.Add(chosenCard);
+            if (enemyDeck.drawPile.Count == 0)
+            {
+                enemyDeck.ReshuffleDiscardToDraw();
+            }
+            enemyDeck.DrawCard(1);
             //Debug.Log("敌人AI成功行动");
         }
 
