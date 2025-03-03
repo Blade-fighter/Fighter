@@ -361,6 +361,12 @@ public class Character : MonoBehaviour
     // 超必杀条逻辑 - 增加超必杀数值
     public void IncreaseSuperValue(float value)
     {
+        if(gameObject.tag == "Player"){
+            if(TreasureManager.Instance.IsValid("QiHaiDieChao")){
+                QiHaiDieCHao treasure = (QiHaiDieCHao)TreasureManager.Instance.GetTreasure("QiHaiDieChao");
+                treasure.Effect(value);
+            }
+        }
         currentSuperValue += value;
         if (currentSuperValue >= 50&&currentSuperCount<maxSuperCount)
         {
@@ -379,6 +385,10 @@ public class Character : MonoBehaviour
     // 消耗超必杀条
     public void UseSuperMeter(int count)
     {
+        if(TreasureManager.Instance.IsValid("街头卖艺")){
+            JieTouMaiYi treasure = (JieTouMaiYi)TreasureManager.Instance.GetTreasure("街头卖艺");
+            treasure.Effect();
+        }
         if (currentSuperCount >= count)
         {
             currentSuperCount -= count;

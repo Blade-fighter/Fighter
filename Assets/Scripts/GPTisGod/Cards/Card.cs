@@ -20,6 +20,7 @@ public class Card
     public AttackCollider attackColliderPrefab; // 攻击碰撞体预制体
 
     public GameObject activeCollider; // 用于引用当前创建的碰撞体
+    static int executeTimes = 0;
 
     public List<HitData> multiHitData; // 多段攻击的数据
     // 构造函数
@@ -40,6 +41,16 @@ public class Card
 
     public void Execute(Character attacker, Character target)
     {
+        if(TreasureManager.Instance.IsValid("活动筋骨")){
+            executeTimes += 1;
+            executeTimes %= 4;
+            if(executeTimes == 0){
+                HuoDongJinGu treasure = (HuoDongJinGu)TreasureManager.Instance.GetTreasure("活动筋骨");
+                treasure.Effect(attacker);
+            }
+        }else{
+            executeTimes = 0;
+        }
         switch (cardType)
         {
             case CardType.Defense://防御
