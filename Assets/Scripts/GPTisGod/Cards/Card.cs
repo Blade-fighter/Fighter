@@ -41,6 +41,7 @@ public class Card
 
     public void Execute(Character attacker, Character target)
     {
+        /*ÔÝÊ±¸Üµô
         if(TreasureManager.Instance.IsValid("»î¶¯½î¹Ç")){
             executeTimes += 1;
             executeTimes %= 4;
@@ -51,6 +52,7 @@ public class Card
         }else{
             executeTimes = 0;
         }
+        */
         switch (cardType)
         {
             case CardType.Defense://·ÀÓù

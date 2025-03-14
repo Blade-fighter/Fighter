@@ -32,6 +32,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     void Start()
     {
+
     }
 
     public void UpdateCardVisual()
