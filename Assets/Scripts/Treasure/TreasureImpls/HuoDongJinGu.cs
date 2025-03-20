@@ -5,11 +5,14 @@ using UnityEngine;
 public class HuoDongJinGu : TreasureBase
 {
     public HuoDongJinGu(){
-        Name = "»î¶¯½î¹Ç";
+        Name = "HuoDongJinGu";
         Value = TreasureValue.Normal;
+        EffectTimes.Add(EffectTime.Card);
     }
 
-    public void Effect(Character character){
-        character.Heal(1);
+    public override void Effect(TreasureContext context){
+        if(context.CardCount % 4 == 0){
+            context.character.Heal(1);
+        }
     }
 }

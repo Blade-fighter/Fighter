@@ -5,11 +5,12 @@ using UnityEngine;
 public class ChongZhengQiGu : TreasureBase
 {
     public ChongZhengQiGu(){
-        Name = "ÖØÕûÆì¹Ä";
+        Name = "ChongZhengQiGu";
         Value = TreasureValue.Normal;
+        EffectTimes.Add(EffectTime.Shuffle);
     }
 
-    public void Effect(float CardCount, Character character){
-        character.Heal(CardCount / 5.0f);
+    public override void Effect(TreasureContext context){
+        context.character.Heal(context.TotalCardCount / 5.0f);
     }
 }

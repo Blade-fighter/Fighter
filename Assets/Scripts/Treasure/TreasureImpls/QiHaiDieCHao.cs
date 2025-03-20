@@ -2,13 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class QiHaiDieCHao : TreasureBase
+public class QiHaiDieChao : TreasureBase
 {
-    public QiHaiDieCHao(){
-        Name = "Æøº£µþ³±";
+    public QiHaiDieChao(){
+        Name = "QiHaiDieChao";
         Value = TreasureValue.Normal;
+        EffectTimes.Add(EffectTime.Attack);
+        EffectTimes.Add(EffectTime.Attacked);
+        EffectTimes.Add(EffectTime.Defened);
     }
-    public void Effect(float Value){
-        Value += 1.0f;
+    public override void Effect(TreasureContext context){
+        context.character.IncreaseSuperValue(1.0f);
     }
 }

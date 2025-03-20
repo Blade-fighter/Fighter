@@ -5,11 +5,12 @@ using UnityEngine;
 public class ShiGuangFeiShi : TreasureBase
 {
     public ShiGuangFeiShi(){
-        Name = " ±π‚∑… ≈";
+        Name = "ShiGuangFeiShi";
         Value = TreasureValue.Normal;
+        EffectTimes.Add(EffectTime.BattleEnd);
     }
 
-    public void Effect(float Value){
-        Value += 2.0f;
+    public override void Effect(TreasureContext context){
+        context.character.maxHealth += 2.0f;
     }
 }

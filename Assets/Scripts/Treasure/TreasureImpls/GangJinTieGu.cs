@@ -5,12 +5,13 @@ using UnityEngine;
 public class GangJinTieGu : TreasureBase
 {
     public GangJinTieGu(){
-        Name = "¸Ö½îÌú¹Ç";
+        Name = "GangJinTieGu";
         Value = TreasureValue.Normal;
+        EffectTimes.Add(EffectTime.Add);
     }
 
-    public void Effect(Character character){
-        character.currentDefenseValue += 50;
-        character.maxDefenseValue += 50;
+    public override void Effect(TreasureContext context){
+        context.character.currentDefenseValue += 50;
+        context.character.maxDefenseValue += 50;
     }
 }

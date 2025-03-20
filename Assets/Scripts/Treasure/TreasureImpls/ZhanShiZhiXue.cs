@@ -6,13 +6,12 @@ using UnityEngine;
 public class ZhanShiZhiXue: TreasureBase
 {
     public ZhanShiZhiXue(){
-        Name = "սʿ֮Ѫ";
+        Name = "ZhanShiZhiXue";
         Value = TreasureValue.Normal;
+        EffectTimes.Add(EffectTime.BattleEnd);
     }
-    void Start(){
-        
-    }
-    public void Effect(Character character){
-        character.Heal(6);
+
+    public override void Effect(TreasureContext context){
+        context.character.Heal(6);
     }
 }

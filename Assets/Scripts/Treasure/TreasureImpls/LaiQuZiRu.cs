@@ -5,11 +5,12 @@ using UnityEngine;
 public class LaiQuZiRu : TreasureBase 
 {
     public LaiQuZiRu(){
-        Name = "来去自如";
+        Name = "LaiQuZiRu";
         Value = TreasureValue.Normal;
+        EffectTimes.Add(EffectTime.BattleBegin);
     }
 
-    public void Effect(){
+    public override void Effect(TreasureContext context){
 
     }
 }

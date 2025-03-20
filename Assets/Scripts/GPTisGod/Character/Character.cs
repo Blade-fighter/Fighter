@@ -362,12 +362,9 @@ public class Character : MonoBehaviour
     public void IncreaseSuperValue(float value)
     {
         if(gameObject.tag == "Player"){
-            /*
-            if(TreasureManager.Instance.IsValid("QiHaiDieChao")){
-                QiHaiDieCHao treasure = (QiHaiDieCHao)TreasureManager.Instance.GetTreasure("QiHaiDieChao");
-                treasure.Effect(value);
-            }
-            */
+            TreasureContext context = new TreasureContext();
+            context.character = this;
+            TreasureManager.Instance.ApplyTreasure(context, EffectTime.Ablility);
         }
         currentSuperValue += value;
         if (currentSuperValue >= 50&&currentSuperCount<maxSuperCount)
@@ -387,10 +384,8 @@ public class Character : MonoBehaviour
     // 消耗超必杀条
     public void UseSuperMeter(int count)
     {
-        if(TreasureManager.Instance.IsValid("街头卖艺")){
-            JieTouMaiYi treasure = (JieTouMaiYi)TreasureManager.Instance.GetTreasure("街头卖艺");
-            treasure.Effect();
-        }
+        TreasureContext context = new TreasureContext();
+        TreasureManager.Instance.ApplyTreasure(context, EffectTime.Ablility);
         if (currentSuperCount >= count)
         {
             currentSuperCount -= count;

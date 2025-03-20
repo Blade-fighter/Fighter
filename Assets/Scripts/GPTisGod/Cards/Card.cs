@@ -41,18 +41,14 @@ public class Card
 
     public void Execute(Character attacker, Character target)
     {
-        /*ÔÝÊ±¸Üµô
-        if(TreasureManager.Instance.IsValid("»î¶¯½î¹Ç")){
+        if(attacker.gameObject.tag == "Player"){
             executeTimes += 1;
-            executeTimes %= 4;
-            if(executeTimes == 0){
-                HuoDongJinGu treasure = (HuoDongJinGu)TreasureManager.Instance.GetTreasure("»î¶¯½î¹Ç");
-                treasure.Effect(attacker);
-            }
-        }else{
-            executeTimes = 0;
+            TreasureContext context = new TreasureContext();
+            context.CardCount = executeTimes;
+            context.character = attacker;
+            TreasureManager.Instance.ApplyTreasure(context, EffectTime.Card);
         }
-        */
+
         switch (cardType)
         {
             case CardType.Defense://·ÀÓù

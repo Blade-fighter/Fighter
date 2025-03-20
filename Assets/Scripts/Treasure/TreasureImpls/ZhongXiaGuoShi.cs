@@ -5,11 +5,14 @@ using UnityEngine;
 public class ZhongXiaGuoShi : TreasureBase
 {
     public ZhongXiaGuoShi(){
-        Name = "种下果实";
+        Name = "ZhongXiaGuoShi";
         Value = TreasureValue.Normal;
+        EffectTimes.Add(EffectTime.BattleEnd);
     }
 
-    public void Effect(){
-        TreasureManager.Instance.AddTreasure("", null);
+    public override void Effect(TreasureContext context){
+        if(context.CurrentBattleCount % 5 == 0){
+            // TreasureManager.Instance.AddTreasure("", null);
+        }
     }
 }

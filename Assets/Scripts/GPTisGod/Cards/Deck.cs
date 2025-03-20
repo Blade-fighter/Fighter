@@ -163,13 +163,11 @@ public class Deck : MonoBehaviour
         InFresh = true;
         if (discardPile.Count > 0)
         {
-            /*
-            if(TreasureManager.Instance.IsValid("重整旗鼓")){
-                ChongZhengQiGu treasure = (ChongZhengQiGu)TreasureManager.Instance.GetTreasure("重整旗鼓");
-                Character character = GameObject.FindGameObjectWithTag("Player").GetComponent<Character>();
-                treasure.Effect(discardPile.Count, character);
-            }
-            */
+            TreasureContext context = new TreasureContext();
+            context.TotalCardCount = discardPile.Count;
+            context.character = GameObject.FindGameObjectWithTag("Player").GetComponent<Character>();
+            TreasureManager.Instance.ApplyTreasure(context, EffectTime.Shuffle);
+
             List<CardData> temp = new List<CardData>(discardPile);
             Shuffle(temp);
             while(temp.Count != 0){

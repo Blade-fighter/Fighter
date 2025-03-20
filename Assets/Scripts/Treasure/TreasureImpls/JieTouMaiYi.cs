@@ -5,11 +5,12 @@ using UnityEngine;
 public class JieTouMaiYi : TreasureBase
 {
     public JieTouMaiYi(){
-        Name = "Ω÷Õ∑¬Ù“’";
+        Name = "JieTouMaiYi";
         Value = TreasureValue.Normal;
+        EffectTimes.Add(EffectTime.Ablility);
     }
 
-    public void Effect(){
+    public override void Effect(TreasureContext context){
         CoinManager.Instance.AddCoin(5);
     }
 }

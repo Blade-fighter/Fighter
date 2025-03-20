@@ -5,11 +5,15 @@ using UnityEngine;
 public class XianFaZhiRen : TreasureBase 
 {
     public XianFaZhiRen(){
-        Name = "先发制人";
+        Name = "XianFaZhiRen";
         Value = TreasureValue.Normal;
+        EffectTimes.Add(EffectTime.Attack);
     }
 
-    public void Effect(){
-
+    public override void Effect(TreasureContext context){
+        if(context.character.currentHealth == context.character.maxHealth){
+            // 击中敌人的招式翻倍
+            // context.character.
+        }
     }
 }

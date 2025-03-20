@@ -2,14 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BianBenJIaLi : TreasureBase
+public class BianBenJiaLi : TreasureBase
 {
-    public BianBenJIaLi(){
-        Name = "变本加厉";
+    public BianBenJiaLi(){
+        Name = "BianBenJiaLi";
         Value = TreasureValue.Normal;
+        EffectTimes.Add(EffectTime.Card);
     }
 
-    public void Effect(float Value){
-        Value += 1.0f;
+    public override void Effect(TreasureContext context){
+        if(context.CardCount == 4){
+            // 角色的力量加一
+            // context.player.
+        }
     }
 }

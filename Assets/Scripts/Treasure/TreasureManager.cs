@@ -3,46 +3,50 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+public class TreasureContext{
+    public Character character;
+    public Character enemy;
+    public EffectTime effectTime;
+    public int CardCount; // 连招中使用的牌数
+    public int TotalCardCount; // 总共的卡牌数目
+    public int CurrentBattleCount; // 当前战斗数目
+};
+
 public class TreasureManager : MonoBehaviour
 {
     public static TreasureManager Instance = null;
-    Dictionary<string, TreasureBase> Treasures;
-    // Start is called before the first frame update
-    void Start()
-    {
+
+    Dictionary<EffectTime, SortedSet<string>> EffectNameMap = new Dictionary<EffectTime, SortedSet<string>>();
+    Dictionary<string, TreasureBase> NameTreasureMap = new Dictionary<string, TreasureBase>();
+
+    void Awake(){
         Instance = this;
     }
 
-    public void AddTreasure(string TreasureName, TreasureBase treasureBase){
-
-        if(TreasureName == "皮糙肉厚"){
-            PiCaoRouHou treasure = (PiCaoRouHou)treasureBase;
-            Character character = GameObject.FindGameObjectWithTag("Player").GetComponent<Character>();
-            treasure.Effect(character);
-        }else if(TreasureName == "钢筋铁骨"){
-            GangJinTieGu treasure = (GangJinTieGu)treasureBase;
-            Character character = GameObject.FindGameObjectWithTag("Player").GetComponent<Character>();
-            treasure.Effect(character);
+    public void ApplyTreasure(TreasureContext context, EffectTime effectTime){
+        if(!EffectNameMap.ContainsKey(effectTime)) return;
+        foreach(string name in EffectNameMap[effectTime]){
+            NameTreasureMap[name].Effect(context);
         }
-        Treasures.Add(TreasureName, treasureBase);
     }
 
-    public void RemoveTreasure(string TreasureName){
-        if(TreasureName == "皮糙肉厚"){
-            PiCaoRouHou treasure = (PiCaoRouHou)GetTreasure("皮糙肉厚");
-            Character character = GameObject.FindGameObjectWithTag("Player").GetComponent<Character>();
-            treasure.DeEffect(character);
+    public void AddTreasure(TreasureContext context, TreasureBase treasureBase){
+        foreach(EffectTime effectTime in treasureBase.EffectTimes){
+            if(!EffectNameMap.ContainsKey(effectTime)){
+                EffectNameMap.Add(effectTime, new SortedSet<string>());
+            }
+            if(!EffectNameMap[effectTime].Contains(treasureBase.Name)){
+                EffectNameMap[effectTime].Add(treasureBase.Name);
+            }
         }
-        Treasures.Remove(TreasureName);
+        NameTreasureMap.Add(treasureBase.Name, treasureBase);
+        context.effectTime = EffectTime.Add;
+        ApplyTreasure(context , EffectTime.Add);
     }
 
-    public bool IsValid(string TreasureName){
-        return Treasures.ContainsKey(TreasureName);
-    }
-
-    public TreasureBase GetTreasure(string TreasureName){
-        TreasureBase result;
-        Treasures.TryGetValue(TreasureName, out result);
-        return result;
+    public void RemoveTreasure(TreasureContext context, string treasureName){
+        context.effectTime = EffectTime.Remove;
+        ApplyTreasure(context, EffectTime.Remove);
+        NameTreasureMap.Remove(treasureName);
     }
 }
