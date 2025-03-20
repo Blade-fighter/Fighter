@@ -20,8 +20,9 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     public Vector3 MoveTarget;
     public bool MovingEndDestroy;
     public float MoveSpeed;
-    public float TotalTime;
-    public float CurTime;
+    public float MoveTime;
+    // public float TotalTime;
+    // public float CurTime;
     public Vector3 OriginPosition;
     public bool IsDiscard;
     public bool IsSrc;
@@ -38,7 +39,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     public void UpdateCardVisual()
     {
         IsMoving = false;
-        MoveSpeed = 3000.0f;
+        MoveTime = 0.5f;
         rectTransform = this.gameObject.GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
         canvas = GetComponentInParent<Canvas>();
@@ -73,9 +74,10 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     private void Move(){
         if(!IsMoving) return;
-        rectTransform.anchoredPosition = Vector3.Lerp(OriginPosition, MoveTarget, CurTime/TotalTime);
-        CurTime += Time.deltaTime;
-        if(CurTime > TotalTime){
+        OriginPosition += (MoveTarget - OriginPosition).normalized * MoveSpeed * Time.deltaTime;
+        rectTransform.anchoredPosition = OriginPosition;
+        if((OriginPosition - MoveTarget).magnitude < 0.1f){
+            rectTransform.anchoredPosition = MoveTarget;
             IsMoving = false;
             // ´ÓÊÖÅÆÒÆ³ý¿¨ÅÆ²¢Ìí¼Óµ½ÆúÅÆ¶Ñ
             Deck deck = playerCharacter.deck;
@@ -148,8 +150,9 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
         MovingEndDestroy = SelfDestroy;
         MoveTarget = Target;
         OriginPosition = rectTransform.anchoredPosition;
-        TotalTime = Math.Abs((OriginPosition - MoveTarget).magnitude / MoveSpeed);
-        CurTime = 0.0f;
+        MoveSpeed = Math.Abs((OriginPosition - MoveTarget).magnitude / MoveTime);
+        // TotalTime = Math.Abs((OriginPosition - MoveTarget).magnitude / MoveSpeed);
+        // CurTime = 0.0f;
     }
 
     public static void CardEffectComplete()
